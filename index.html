@@ -3,931 +3,623 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>吾名小站 MyName Station</title>
-<meta name="description" content="2005 懷舊網誌模擬器：寫網誌、貼 CSS 語法、改版型，一鍵產生分享網址。">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.5.0/lz-string.min.js"></script>
+<title>吾名小站</title>
+<meta name="description" content="吾名小站首頁：熱門相簿、留聲機、大頭寶製造機，回到 2005 年的台灣網路。">
+<script>
+  // 舊版分享網址（index.html#data=...）轉到網誌模擬器
+  if (/^#data=/.test(location.hash)) location.replace('blog.html' + location.hash);
+</script>
 <style>
 :root{
-  --luna1:#0a5fd8; --luna2:#3d95ff; --luna3:#0846b0;
+  --luna1:#0a5fd8; --luna3:#0846b0;
   --xp:#ece9d8; --xpline:#aca899;
-  --blue:#1a6fb3; --sky:#dff0fb; --green:#6fb636; --green2:#8fd14f;
-  --ink:#333; --mute:#888;
-  --old: 'PMingLiU','新細明體','MingLiU','細明體',monospace,serif;
+  --blue:#1a6fb3; --blue2:#1e7cc4; --green:#6fb636; --olive:#6b8e3a;
+  --ink:#333; --mute:#888; --pink:#e0007a;
+  --old:'PMingLiU','新細明體','MingLiU','細明體',monospace,serif;
 }
 *{box-sizing:border-box}
 html,body{margin:0;height:100%}
-body{
-  background:#3a6ea5; color:var(--ink);
-  font:12px/1.5 var(--old);
-  -webkit-font-smoothing:none; -moz-osx-font-smoothing:auto; font-smooth:never;
-}
-button,input,select,textarea{font:12px/1.4 var(--old);color:#000}
-#ie{display:flex;flex-direction:column;height:100vh;background:var(--xp)}
-
-/* ---------- IE chrome ---------- */
-.titlebar{display:flex;align-items:center;gap:6px;height:28px;padding:0 4px 0 8px;color:#fff;font-weight:bold;
-  background:linear-gradient(#3a8cf8,var(--luna1) 12%,#0855dd 50%,var(--luna3));border-radius:7px 7px 0 0;flex:none}
-.titlebar .t{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:1px 1px 0 #0a2a6a;font-size:13px}
-.tb-btn{width:21px;height:21px;border:1px solid #fff;border-radius:3px;background:linear-gradient(#5aa0ff,#1f62e0);color:#fff;
-  font:bold 11px/18px Tahoma,sans-serif;text-align:center;cursor:default}
-.tb-btn.x{background:linear-gradient(#e88a6a,#c6401c)}
-.menubar{display:flex;gap:2px;padding:2px 4px;border-bottom:1px solid #fff;flex:none}
-.menubar span{padding:0 6px;cursor:default}
-.menubar span:hover{background:#316ac5;color:#fff}
-.toolbar{display:flex;align-items:center;gap:4px;padding:3px 6px;border-top:1px solid var(--xpline);border-bottom:1px solid var(--xpline);flex:none;flex-wrap:wrap}
-.tool{display:inline-flex;align-items:center;gap:3px;padding:1px 5px;border:1px solid transparent;border-radius:3px;cursor:pointer;background:none}
-.tool:hover{border-color:#bbb;background:#fff}
-.tool i{display:inline-block;width:18px;height:18px;border-radius:50%;font:bold 12px/18px Tahoma,sans-serif;text-align:center;color:#fff;font-style:normal}
-.addr{display:flex;align-items:center;gap:4px;padding:3px 6px;flex:none;border-bottom:1px solid var(--xpline)}
-.addr label{color:#555}
-.addr .url{flex:1;min-width:0;background:#fff;border:1px solid #7f9db9;padding:1px 4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.addr .go{padding:0 6px;border:1px solid transparent}
-.statusbar{display:flex;gap:6px;padding:2px 6px;border-top:1px solid var(--xpline);flex:none}
-.statusbar span{border:1px inset #fff;padding:0 6px}
-.statusbar span:first-child{flex:1}
-.taskbar{display:flex;align-items:center;height:30px;background:linear-gradient(#3168d5,#245edb 10%,#1941a5);flex:none}
-.start{height:30px;padding:0 18px 0 10px;color:#fff;font:italic bold 15px/30px 'Trebuchet MS',sans-serif;border-radius:0 12px 12px 0;
-  background:linear-gradient(#5eac56,#3c9a2f 40%,#2f7d24);text-shadow:1px 1px 1px #000;cursor:pointer;border:0}
-.task{margin-left:6px;height:22px;padding:0 10px;color:#fff;background:#3c81f3;border:1px solid #1c50c0;border-radius:3px;line-height:20px;white-space:nowrap;max-width:180px;overflow:hidden;text-overflow:ellipsis}
-.task.on{background:#1e52b7;box-shadow:inset 1px 1px 2px #0a2a6a}
-.tray{margin-left:auto;height:30px;padding:0 12px;color:#fff;line-height:30px;background:linear-gradient(#1290e8,#0f78d5);border-left:1px solid #0b4fb0;white-space:nowrap}
+body{background:#fff;color:var(--ink);font:12px/1.5 var(--old);-webkit-font-smoothing:none;-moz-osx-font-smoothing:auto;font-smooth:never}
+button,input,select{font:12px/1.4 var(--old);color:#000}
+a{color:var(--blue);cursor:pointer}
+.toast{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);background:#fffbe6;border:1px solid #f0b400;padding:4px 14px;box-shadow:2px 2px 0 rgba(0,0,0,.2);display:none;z-index:60;max-width:calc(100% - 32px)}
+.toast.on{display:block}
 
 /* ---------- portal ---------- */
-.page{flex:1;min-height:0;overflow:auto;background:#fff}
-.portal{max-width:1180px;margin:0 auto;padding:0 10px}
-.ph{position:relative;display:flex;align-items:flex-end;gap:12px;height:96px;overflow:hidden;border-bottom:3px solid #d5e8f5}
-.ph:before{content:"";position:absolute;left:-60px;top:-150px;width:520px;height:300px;border-radius:50%;
-  background:radial-gradient(closest-side,transparent 70%,#ff8a8a 71% 74%,#ffc46a 75% 78%,#fff27a 79% 82%,#8fe07a 83% 86%,#7ac6ff 87% 90%,#b79bff 91% 94%,transparent 95%);opacity:.75}
-.logo{position:relative;font:bold 40px/1 var(--old);color:var(--green);letter-spacing:2px;padding:0 0 12px 16px;white-space:nowrap;
-  text-shadow:-2px -2px 0 #fff,2px -2px 0 #fff,-2px 2px 0 #fff,2px 2px 0 #fff,3px 4px 0 #b8d8a0}
-.logo small{display:block;font:bold 10px/1 Verdana,sans-serif;color:var(--blue);letter-spacing:1px;margin-top:4px;text-shadow:none}
-.icons{position:relative;display:flex;gap:4px;padding-bottom:6px}
-.icons button{width:62px;border:0;background:none;cursor:pointer;color:#666;padding:2px 0;border-radius:4px}
-.icons button:hover,.icons button.on{background:#eef7ff;color:var(--blue)}
-.icons svg{display:block;margin:0 auto 2px;width:38px;height:34px}
-.ph-r{position:relative;margin-left:auto;align-self:stretch;display:flex;flex-direction:column;justify-content:space-between;align-items:flex-end;padding:6px 0}
-.ph-r .links a{color:#333;margin-left:10px;text-decoration:none}
-.ph-r .hi b{color:#e0007a}
-.cats{display:flex}
-.cats a{padding:2px 8px;color:var(--blue);border-left:1px solid #cde;text-decoration:none;font-weight:bold}
+.wrap{width:960px;max-width:100%;margin:0 auto;padding:0 8px 20px}
+.page{background:#fff}
+.ph{position:relative;display:flex;align-items:flex-end;height:118px;border-bottom:1px solid #d5e5f0;overflow:hidden}
+.ph:before{content:"";position:absolute;left:-40px;top:-170px;width:560px;height:330px;border-radius:50%;
+  background:radial-gradient(closest-side,transparent 70%,#ff8a8a 71% 74%,#ffc46a 75% 78%,#fff27a 79% 82%,#8fe07a 83% 86%,#7ac6ff 87% 90%,#b79bff 91% 94%,transparent 95%);opacity:.8}
+.ph:after{content:"";position:absolute;left:0;right:0;bottom:0;height:8px;background:linear-gradient(#fff,#eaf2f8)}
+.logo{position:relative;z-index:1;font:bold 46px/1 var(--old);color:#5fae2e;letter-spacing:2px;padding:0 6px 16px 18px;white-space:nowrap;text-decoration:none;
+  text-shadow:-3px -3px 0 #fff,3px -3px 0 #fff,-3px 3px 0 #fff,3px 3px 0 #fff,0 3px 0 #fff,4px 6px 0 #b8d8a0}
+.icons{position:relative;z-index:1;display:flex;gap:2px;padding-bottom:10px}
+.icons a{width:60px;text-align:center;color:#777;text-decoration:none;padding:2px 0;border-radius:4px}
+.icons a:hover{background:#eef7ff;color:var(--blue)}
+.icons svg{display:block;margin:0 auto 2px;width:42px;height:38px}
+.ph-r{position:relative;z-index:1;margin-left:auto;align-self:stretch;display:flex;flex-direction:column;justify-content:space-between;align-items:flex-end;padding:6px 0 10px}
+.ph-r .top{white-space:nowrap}
+.ph-r .top a{color:#333;margin-left:10px;text-decoration:none}
+@media (max-width:1100px){.ph-r .top a:nth-child(-n+3){display:none}.cats a:nth-child(n+6){display:none}}
+.ph-r .top a.hot{color:#e00;font-weight:bold}
+.flags{display:flex;gap:4px;margin-top:4px}
+.flags i{width:22px;height:15px;border:1px solid #999;display:block}
+.cats{display:flex;border:1px solid #cfe0ec;border-radius:10px 0 0 0;padding:1px 4px;background:#fff}
+.cats a{white-space:nowrap;padding:1px 6px;color:var(--blue);border-left:1px solid #cde;text-decoration:none}
 .cats a:first-child{border:0}
-.gramophone{display:flex;align-items:center;gap:8px;margin:8px 0;border:2px solid #b5d88f;background:#fbfff5;height:26px}
-.gramophone b{background:#6b8e3a;color:#fff;height:100%;padding:0 10px;line-height:22px;white-space:nowrap}
-.gramophone .msg{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.gramophone .msg em{color:var(--blue);font-style:normal}
-.gramophone a{color:var(--blue);padding-right:8px;white-space:nowrap;cursor:pointer;text-decoration:underline}
+.cats a:hover{color:var(--pink)}
 
-/* ---------- workspace ---------- */
-.ws{display:grid;grid-template-columns:380px minmax(0,1fr);gap:12px;padding-bottom:12px}
-.panel{border:1px solid #9cc7e6;min-width:0}
-.tabs{display:flex;flex-wrap:wrap;background:#eef5fb;border-bottom:3px solid var(--blue)}
-.tabs button{flex:1 1 auto;border:1px solid #cde;border-bottom:0;background:linear-gradient(#fff,#e6edf3);color:#777;padding:4px 6px;cursor:pointer;margin:3px 1px 0;border-radius:3px 3px 0 0}
-.tabs button.on{background:var(--blue);color:#fff;font-weight:bold;border-color:var(--blue)}
-.pane{display:none;padding:10px}
-.pane.on{display:block}
-.pane h3{margin:10px 0 6px;font-size:12px;color:var(--blue);border-left:4px solid var(--green);padding-left:6px}
-.pane h3:first-child{margin-top:0}
-.row{display:flex;align-items:center;gap:6px;margin-bottom:6px}
-.row>label{width:72px;flex:none;color:#555;text-align:right}
-.row>input,.row>select{flex:1;min-width:0}
-input[type=text],input[type=url],input[type=datetime-local],select,textarea{border:1px solid #7f9db9;padding:2px 3px;background:#fff}
-textarea{width:100%;resize:vertical;display:block}
-textarea.code{font:12px/1.5 'MingLiU','細明體',monospace;background:#fffef0;min-height:260px;white-space:pre;tab-size:2}
-.btn{border:1px solid #003c74;border-radius:3px;background:linear-gradient(#fff,#ecebe6 85%,#d6d0c5);padding:2px 10px;cursor:pointer;color:#000}
+.cols{display:grid;grid-template-columns:minmax(0,1fr) 290px;gap:12px;margin-top:8px}
+.bar{display:flex;align-items:stretch;border:1px solid #9bc3df;height:28px}
+.bar input{flex:1;min-width:0;border:0;padding:0 6px 0 28px;font-size:13px;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18'%3E%3Ccircle cx='7' cy='7' r='5' fill='none' stroke='%231a6fb3' stroke-width='2.5'/%3E%3Cpath d='M11 11l5 5' stroke='%231a6fb3' stroke-width='3'/%3E%3C/svg%3E") 6px center no-repeat}
+.bar select{border:0;border-left:1px solid #ccc;background:#f3f3f3;padding:0 4px}
+.bar button{width:110px;border:0;color:#fff;font-size:13px;letter-spacing:2px;cursor:pointer;background:linear-gradient(#3a8fd4,#1866ab)}
+.results{border:1px solid #9bc3df;border-top:0;padding:6px 8px;background:#f7fbff;display:none}
+.results.on{display:block}
+.gram{display:flex;align-items:center;gap:8px;margin:8px 0;border:2px solid #b5d88f;height:28px;background:#fbfff5}
+.gram b{background:var(--olive);color:#fff;height:100%;padding:0 12px;line-height:24px;white-space:nowrap;letter-spacing:2px;font-size:13px}
+.gram .msg{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gram .msg em{color:var(--blue);font-style:normal}
+.gram a{padding-right:8px;white-space:nowrap;text-decoration:underline}
+.gram a:before{content:"◀))";color:var(--olive);font-size:10px;margin-right:2px;text-decoration:none;display:inline-block}
+
+.hot-h{display:flex;align-items:flex-end;border-bottom:3px solid var(--blue2)}
+.hot-h h2{margin:0;font-size:16px;color:#555;width:150px;padding-bottom:2px}
+.hot-h button{flex:1;border:1px solid #c5d8e6;border-bottom:0;background:linear-gradient(#fff,#eef3f7);color:#999;font-size:13px;padding:5px 0;cursor:pointer;margin-left:4px;border-radius:2px 2px 0 0}
+.hot-h button.on{background:var(--blue2);color:#fff;font-weight:bold;border-color:var(--blue2)}
+.albums{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding:10px;border:1px solid #d5e5f0;border-top:0}
+.alb{border:1px solid #d8d8d8;padding:5px;background:#fafafa;cursor:pointer}
+.alb:hover{border-color:#ff9900;background:#fffaf0}
+.alb .ph-img{display:block;width:100%;aspect-ratio:4/5;border:1px solid #ccc;background:#ddd}
+.alb .u{color:#666;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.alb .u:after{content:"";display:inline-block;width:12px;height:10px;margin-left:4px;background:#6aa0d0;border:1px solid #3a70a0;vertical-align:-1px}
+.alb .c{color:var(--blue);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:13px}
+.hot-f{display:flex;flex-wrap:wrap;gap:4px 14px;padding:4px 0;align-items:center}
+.hot-f .pk{color:var(--pink)}
+.hot-f .pk:before{content:"PK";background:var(--pink);color:#fff;font:bold 10px/14px Verdana,sans-serif;padding:0 3px;margin-right:4px;display:inline-block}
+.hot-f .sp{flex:1}
+.hot-f .more:before{content:"▲ ";color:var(--blue2);font-size:9px}
+
+.news{margin-top:10px;border:1px solid #c8de9e}
+.news-h{display:flex;align-items:center;background:linear-gradient(#f5fbe8,#e7f3cf);border-bottom:1px solid #c8de9e}
+.news-h b{background:var(--olive);color:#fff;padding:2px 8px;line-height:1.2;font-size:12px;text-align:center;width:50px}
+.news-h .hl{flex:1;padding:0 8px;font-weight:bold;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:13px}
+.news-h .hl small{color:#666;font-weight:normal}
+.news-h a{padding:0 8px;white-space:nowrap}
+.news p{margin:0;padding:5px 10px 5px 62px;color:#555}
+
+.mid{display:grid;grid-template-columns:200px minmax(0,1fr);gap:10px;margin-top:10px}
+.box{border:1px solid #c5d8e6}
+.box-h{background:linear-gradient(#fdfdfd,#e9eef2);border-bottom:1px solid #c5d8e6;padding:3px 8px;font-weight:bold;color:#444;display:flex;justify-content:space-between}
+.box-h:before{content:":::";color:#9ab;margin-right:6px;font-weight:normal}
+.box-h span{flex:1}
+.box ul{margin:0;padding:6px 8px 6px 22px}
+.box li{margin:2px 0}
+.school{display:flex;align-items:center;gap:8px;border:2px solid #c5d8e6;padding:6px;cursor:pointer;margin-bottom:10px;background:linear-gradient(#fff,#f2f8fd)}
+.school b{display:block;font-size:20px;color:#e07800;text-shadow:1px 1px 0 #fff,2px 2px 0 #f5c070}
+.ad{position:relative;height:130px;border:1px solid #e0b400;overflow:hidden;cursor:pointer;
+  background:radial-gradient(circle at 80% 30%,#fff7b0 0 20%,transparent 21%),repeating-linear-gradient(-35deg,#ffd31a 0 26px,#ffe24d 26px 52px)}
+.ad .tag{position:absolute;right:0;top:0;background:#222;color:#fff;padding:1px 8px;font-size:11px}
+.ad .big{position:absolute;left:150px;top:28px;font:bold 34px/1.1 var(--old);color:#c40000;text-shadow:2px 2px 0 #fff,-2px -2px 0 #fff,2px -2px 0 #fff,-2px 2px 0 #fff,4px 4px 0 #a06000;transform:rotate(-4deg)}
+.ad .sub{position:absolute;left:156px;bottom:12px;background:#c40000;color:#fff;padding:2px 10px;font-size:13px}
+.ad svg{position:absolute;left:14px;bottom:-6px;width:120px}
+.rank li{display:flex;gap:6px}
+.rank li i{font-style:normal;background:#ff8a00;color:#fff;width:16px;text-align:center;font-size:11px;flex:none}
+.rank li:nth-child(n+4) i{background:#aab}
+.rank li a{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rank li span{color:#999}
+
+/* ---------- 右欄 ---------- */
+.hi{display:flex;justify-content:space-between;align-items:center;font-size:13px;margin-bottom:4px;padding-top:2px}
+.hi b{color:var(--pink)}
+.member{display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px}
+.mbtn{grid-column:span 1;display:flex;align-items:center;justify-content:center;border:3px solid #cfe3bb;background:linear-gradient(#a4dd6a,#5aa62a);color:#fff;font-weight:bold;font-size:17px;letter-spacing:1px;cursor:pointer;
+  text-shadow:1px 1px 0 #2f6a10;border-radius:3px;height:60px}
+.mbtn:hover{filter:brightness(1.08)}
+.me{grid-row:span 2;border:1px solid #c5d8e6;padding:3px;text-align:center;background:#fff}
+.me svg{width:100%;display:block;aspect-ratio:4/5}
+.ic{border:1px solid #c5d8e6;background:linear-gradient(#fff,#eaf4fb);height:60px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#456;font-size:12px;text-decoration:none}
+.ic:hover{border-color:#ff9900}
+.ic svg{width:34px;height:28px}
+.me-links{display:flex;justify-content:space-between;margin:4px 2px;font-weight:bold}
+.slogan{color:var(--pink);font-weight:bold;font-size:13px;margin:4px 0}
+.bgmsw{display:flex;align-items:center;gap:6px;margin:4px 0 8px;font-size:13px}
+.bgmsw:before{content:"🎧"}
+.notice{display:flex;border:1px solid #c5d8e6;margin-bottom:8px}
+.notice b{width:24px;flex:none;background:linear-gradient(90deg,#6b8e3a,#87ab4f);color:#fff;writing-mode:vertical-rl;text-align:center;letter-spacing:6px;padding:6px 0;font-size:13px}
+.notice ul{list-style:none;margin:0;padding:4px 6px;flex:1;min-width:0}
+.notice li{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:1px 0}
+.notice li:before{content:"▬";color:#4b9ad8;margin-right:4px;font-size:10px}
+.notice .m{text-align:right}
+.notice .m:before{content:"▲";color:var(--blue2)}
+
+.maker{border:1px solid #7bc0e8;background:linear-gradient(#d9f0ff,#fff 40%,#eaf6ff);padding:8px;position:relative}
+.maker h3{margin:0 0 4px;font:bold 22px/1 var(--old);color:#5fae2e;text-shadow:-2px -2px 0 #fff,2px -2px 0 #fff,-2px 2px 0 #fff,2px 2px 0 #fff}
+.maker h3 small{display:block;color:#e07800;font-size:14px;margin-top:4px}
+.mk-face{width:150px;margin:4px auto;display:block}
+.mk-row{display:flex;flex-wrap:wrap;gap:4px;justify-content:center;margin:4px 0}
+.mk-row button{width:42px;height:42px;padding:0;border:2px solid #cde;background:#fff;cursor:pointer;border-radius:4px}
+.mk-row button.on{border-color:#ff9900}
+.mk-row button svg{width:100%;height:100%}
+.mk-row .sw{width:22px;height:22px;border-radius:50%}
+.mk-go{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:6px}
+.mk-go b{font-size:20px;color:#e07800}
+.go-btn{background:linear-gradient(#a4dd6a,#5aa62a);color:#fff;border:2px solid #4f8a23;font:bold 15px Verdana,sans-serif;padding:0 10px;cursor:pointer;border-radius:3px}
+
+.foot{margin-top:14px;border-top:3px solid var(--blue2);padding:8px 0;text-align:center;color:#888}
+.foot a{color:#666;margin:0 6px}
+
+/* ---------- 視窗 ---------- */
+.dlg-bg{position:fixed;inset:0;background:rgba(0,0,0,.25);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+.dlg-bg.on{display:flex}
+.dlg{background:var(--xp);border:1px solid #0831d9;border-radius:7px 7px 0 0;box-shadow:4px 4px 12px rgba(0,0,0,.4);width:420px;max-width:100%}
+.dlg .titlebar{display:flex;align-items:center;gap:6px;height:26px;padding:0 4px 0 8px;color:#fff;font-weight:bold;background:linear-gradient(#3a8cf8,#0a5fd8 12%,#0855dd 50%,#0846b0);border-radius:6px 6px 0 0}
+.dlg .titlebar .t{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dlg .tb-btn{width:21px;height:21px;border:1px solid #fff;border-radius:3px;background:linear-gradient(#e88a6a,#c6401c);color:#fff;font:bold 11px/18px Tahoma,sans-serif;text-align:center;cursor:pointer}
+.dlg-c{padding:12px}
+.dlg-c .row{display:flex;align-items:center;gap:8px;margin:6px 0}
+.dlg-c .row label{width:50px;text-align:right}
+.dlg-c input[type=text]{flex:1;border:1px solid #7f9db9;padding:2px 4px}
+.btn{border:1px solid #003c74;border-radius:3px;background:linear-gradient(#fff,#ecebe6 85%,#d6d0c5);padding:2px 14px;cursor:pointer}
 .btn:hover{box-shadow:inset 0 0 0 1px #f8b330}
-.btn.go{background:linear-gradient(#a8e07a,#6fb636);color:#fff;border-color:#4f8a23;font-weight:bold;text-shadow:1px 1px 0 #3d6e1a}
-.btn.sm{padding:0 6px;font-size:11px}
-.btns{display:flex;flex-wrap:wrap;gap:4px;margin:6px 0}
-.hint{color:var(--mute);font-size:11px;margin:4px 0}
-.chk{display:flex;align-items:center;gap:4px;margin:3px 0}
-.themes{display:grid;grid-template-columns:repeat(auto-fill,minmax(105px,1fr));gap:6px}
-.theme{border:2px solid #ddd;padding:3px;cursor:pointer;background:#fff;text-align:center}
-.theme.on{border-color:#ff7a00;box-shadow:0 0 0 1px #ff7a00}
-.theme i{display:block;height:34px;margin-bottom:3px;border:1px solid #ccc}
-.list{border:1px solid #7f9db9;background:#fff;max-height:150px;overflow:auto;margin-bottom:6px}
-.list div{padding:2px 6px;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;border-bottom:1px dotted #e5e5e5}
-.list div.on{background:#316ac5;color:#fff}
-.list div small{color:inherit;opacity:.7}
-.kao{display:flex;flex-wrap:wrap;gap:3px;margin:4px 0}
-.kao button{border:1px solid #ccd;background:#f7f9ff;padding:0 4px;cursor:pointer;font-size:11px}
-.share-out{width:100%;height:70px;font-size:11px;word-break:break-all}
-.saved{color:var(--green);font-size:11px}
-
-.stage{position:relative;border:1px solid #9cc7e6;min-width:0;display:flex;flex-direction:column}
-.stage-bar{display:flex;align-items:center;gap:6px;padding:3px 6px;background:#eef5fb;border-bottom:1px solid #9cc7e6;flex-wrap:wrap}
-.stage-bar b{color:var(--blue)}
-.stage-bar .sp{flex:1}
-#frame{display:block;width:100%;flex:1;min-height:640px;border:0;background:#fff}
-.bgm{position:absolute;inset:auto 0 0 0;margin:auto;top:40px;width:260px;height:110px;background:#fffbe6;border:2px solid #f0b400;
-  box-shadow:4px 4px 0 rgba(0,0,0,.25);text-align:center;padding:14px;cursor:pointer;display:none;z-index:2}
-.bgm b{display:block;color:#c06000;font-size:14px;margin:6px 0}
-.viewbar{display:none;align-items:center;gap:8px;flex-wrap:wrap;padding:6px 10px;margin:8px 0;background:#fff7d6;border:1px solid #f0c040}
-.viewbar .sp{flex:1}
-
-body.view .ws{grid-template-columns:minmax(0,1fr)}
-body.view .panel,body.view .gramophone{display:none}
-body.view .viewbar{display:flex}
-body.view #frame{min-height:calc(100vh - 290px)}
+.dlg-f{display:flex;justify-content:flex-end;gap:6px;margin-top:10px}
+.lb{display:grid;grid-template-columns:200px 1fr;gap:12px}
+.lb svg{width:100%;border:1px solid #888;background:#fff;padding:3px}
+.lb h4{margin:0 0 6px;color:var(--blue);font-size:14px}
+.lb .stat{color:#666;margin:6px 0}
+.pk{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:center;text-align:center}
+.pk .vs{font:bold italic 28px Impact,Verdana,sans-serif;color:var(--pink)}
+.pk .side{cursor:pointer;border:2px solid transparent;padding:3px}
+.pk .side:hover{border-color:#ff9900;background:#fffaf0}
+.pk svg{width:100%;display:block}
+.pk .score{font-size:13px;color:var(--pink);font-weight:bold}
 
 @media (max-width:900px){
-  .ws{grid-template-columns:minmax(0,1fr)}
-  #frame{min-height:70vh}
+  .cols,.mid{grid-template-columns:minmax(0,1fr)}
   .ph{height:auto;flex-wrap:wrap;padding-top:8px}
   .ph-r{display:none}
-  .logo{font-size:30px}
+  .logo{font-size:34px}
   .icons{flex-wrap:wrap}
-  .icons button{width:52px}
-  .menubar span:nth-child(n+4),.toolbar .tool span{display:none}
-  .task{display:none}
+  .icons a{width:50px}
+  .albums{grid-template-columns:repeat(2,1fr)}
+  .hot-h h2{width:auto;margin-right:4px;font-size:14px}
+  .hot-h button{font-size:12px}
+  .ad .big{font-size:24px;left:110px}.ad .sub{left:112px}.ad svg{width:90px}
+  .lb{grid-template-columns:1fr}
+  .lb svg{max-width:200px;margin:0 auto;display:block}
 }
 </style>
 </head>
 <body>
-<div id="ie">
-  <div class="titlebar">
-    <span class="t" id="winTitle">吾名小站 - Microsoft Internet Explorer</span>
-    <span class="tb-btn">_</span><span class="tb-btn">□</span><span class="tb-btn x">×</span>
-  </div>
-  <div class="menubar"><span>檔案(F)</span><span>編輯(E)</span><span>檢視(V)</span><span>我的最愛(A)</span><span>工具(T)</span><span>說明(H)</span></div>
-  <div class="toolbar">
-    <button class="tool" onclick="history.back()"><i style="background:#3aa53a">◀</i><span>上一頁</span></button>
-    <button class="tool" onclick="render(true)"><i style="background:#2f8f2f">↻</i><span>重新整理</span></button>
-    <button class="tool" onclick="goHome()"><i style="background:#d9822b">⌂</i><span>首頁</span></button>
-    <button class="tool" onclick="showTab('share')"><i style="background:#e8b800">★</i><span>我的最愛</span></button>
-  </div>
-  <div class="addr"><label>網址(D)</label><div class="url" id="addr">http://www.myname.cc/</div><span class="go">➜ 移至</span></div>
-
-  <div class="page">
-    <div class="portal">
-      <div class="ph">
-        <div class="logo">吾名小站<small>MyName Station · 2005</small></div>
-        <div class="icons" id="icons">
-          <button data-tab="theme"><svg viewBox="0 0 38 34"><rect x="3" y="4" width="32" height="26" rx="3" fill="#4a90c8"/><rect x="7" y="8" width="24" height="18" fill="#dff2ff"/><path d="M8 25l8-9 6 6 4-4 5 7z" fill="#5aa34a"/><circle cx="25" cy="13" r="3" fill="#ffcf3a"/></svg>版型</button>
-          <button data-tab="posts"><svg viewBox="0 0 38 34"><rect x="5" y="3" width="26" height="28" rx="2" fill="#fff" stroke="#4a90c8" stroke-width="2.5"/><path d="M10 10h16M10 15h16M10 20h10" stroke="#4a90c8" stroke-width="2.5"/><path d="M27 23l7-7 2 2-7 7h-2z" fill="#e0007a"/></svg>網誌</button>
-          <button data-tab="music"><svg viewBox="0 0 38 34"><circle cx="19" cy="17" r="14" fill="#fff" stroke="#2b7bc0" stroke-width="3"/><path d="M15 10v14l11-7z" fill="#2b7bc0"/></svg>影音</button>
-          <button data-tab="guest"><svg viewBox="0 0 38 34"><rect x="3" y="4" width="30" height="20" rx="4" fill="#fff" stroke="#6a8aa8" stroke-width="2.5"/><path d="M10 24l-2 7 8-7z" fill="#6a8aa8"/><circle cx="12" cy="14" r="2" fill="#6a8aa8"/><circle cx="18" cy="14" r="2" fill="#6a8aa8"/><circle cx="24" cy="14" r="2" fill="#6a8aa8"/></svg>留言</button>
-          <button data-tab="share"><svg viewBox="0 0 38 34"><circle cx="13" cy="11" r="5" fill="#5b8bd0"/><path d="M3 30c0-8 5-12 10-12s10 4 10 12z" fill="#5b8bd0"/><circle cx="26" cy="13" r="4.5" fill="#f08a3a"/><path d="M18 30c0-7 4-10 8-10s9 3 9 10z" fill="#f08a3a"/></svg>找朋友</button>
-        </div>
-        <div class="ph-r">
-          <div class="links"><a>設為首頁</a><a>服務說明</a><a>加入VIP</a></div>
-          <div class="hi">Hi, <span id="hiUser">ming0921</span>！ <b>你的小站今天也很有型</b></div>
-          <div class="cats"><a>正妹</a><a>帥哥</a><a>美食</a><a>攝影</a><a>心情</a><a>笑話</a></div>
-        </div>
-      </div>
-
-      <div class="gramophone"><b>留聲機</b><div class="msg" id="gramo"></div><a onclick="showTab('guest')">我要留言</a></div>
-      <div class="viewbar">
-        <span>你正在參觀 <b id="vbUser"></b> 的吾名小站 ^^</span><span class="sp"></span>
-        <button class="btn" onclick="adoptShared()">把這個版型帶回我的後台</button>
-        <button class="btn go" onclick="goHome()">我也要開一個小站！</button>
-      </div>
-
-      <div class="ws">
-        <div class="panel">
-          <div class="tabs" id="tabs">
-            <button data-tab="basic" class="on">基本設定</button>
-            <button data-tab="posts">發表文章</button>
-            <button data-tab="theme">版面語法</button>
-            <button data-tab="music">音樂盒</button>
-            <button data-tab="guest">留言板</button>
-            <button data-tab="share">分享</button>
-          </div>
-
-          <!-- 基本設定 -->
-          <div class="pane on" data-pane="basic">
-            <h3>網誌資料</h3>
-            <div class="row"><label>帳號</label><input type="text" data-k="user" maxlength="20"></div>
-            <div class="row"><label>網誌標題</label><input type="text" data-k="title"></div>
-            <div class="row"><label>副標題</label><input type="text" data-k="subtitle"></div>
-            <div class="row"><label>跑馬燈</label><input type="text" data-k="marquee"></div>
-            <h3>個人資料</h3>
-            <div class="row"><label>暱稱</label><input type="text" data-k="profile.nick"></div>
-            <div class="row"><label>大頭貼網址</label><input type="url" data-k="profile.avatar" placeholder="空白＝自動產生像素頭像"></div>
-            <div class="row"><label></label><input type="file" id="avatarFile" accept="image/*"></div>
-            <div class="row"><label>今日心情</label><select data-k="profile.mood" id="moodSel"></select></div>
-            <div class="row"><label>簽名檔</label><input type="text" data-k="profile.sign"></div>
-            <div class="row" style="align-items:flex-start"><label>自我介紹</label><textarea data-k="profile.about" rows="4"></textarea></div>
-            <h3>特效</h3>
-            <label class="chk"><input type="checkbox" data-k="effects.sparkle"> 滑鼠拖曳星星尾巴</label>
-            <label class="chk"><input type="checkbox" data-k="effects.marquee"> 顯示跑馬燈公告</label>
-            <label class="chk"><input type="checkbox" data-k="effects.noRightClick"> 禁止按右鍵（防盜圖 XD）</label>
-            <p class="saved" id="savedAt"></p>
-          </div>
-
-          <!-- 文章 -->
-          <div class="pane" data-pane="posts">
-            <h3>文章列表</h3>
-            <div class="list" id="postList"></div>
-            <div class="btns"><button class="btn" onclick="addPost()">＋ 發表新文章</button><button class="btn" onclick="delPost()">刪除這篇</button><button class="btn sm" onclick="movePost(-1)">↑</button><button class="btn sm" onclick="movePost(1)">↓</button></div>
-            <h3>編輯文章</h3>
-            <div class="row"><label>標題</label><input type="text" data-p="title"></div>
-            <div class="row"><label>發表時間</label><input type="datetime-local" data-p="date"></div>
-            <div class="row"><label>心情</label><select data-p="mood" id="pMood"></select></div>
-            <div class="row"><label>人氣</label><input type="text" data-p="views" inputmode="numeric"></div>
-            <textarea data-p="body" id="pBody" rows="12" placeholder="可以直接寫 HTML，例如 &lt;font color=red&gt;紅字&lt;/font&gt;、&lt;marquee&gt;跑馬燈&lt;/marquee&gt;"></textarea>
-            <div class="kao" id="kao"></div>
-            <div class="btns"><button class="btn" onclick="toMars()">轉成火星文</button><button class="btn" onclick="wrapSel('&lt;font color=&quot;#ff3399&quot;&gt;','&lt;/font&gt;')">粉紅字</button><button class="btn" onclick="wrapSel('&lt;b&gt;','&lt;/b&gt;')">粗體</button><button class="btn" onclick="wrapSel('&lt;marquee&gt;','&lt;/marquee&gt;')">跑馬燈</button><button class="btn" onclick="wrapSel('&lt;span class=&quot;glitter&quot;&gt;','&lt;/span&gt;')">閃亮字</button></div>
-          </div>
-
-          <!-- 版型 -->
-          <div class="pane" data-pane="theme">
-            <h3>選擇基本版型</h3>
-            <div class="themes" id="themes"></div>
-            <h3>自訂 CSS 語法</h3>
-            <p class="hint">從別人家「檢視原始碼」複製來的語法，貼在這裡就會蓋過基本版型。可用：#container #banner #pageheader .description #content .blogbody .datediv .title .innertext .posted #links .sidetitle .side #footer</p>
-            <textarea class="code" data-k="css" spellcheck="false" placeholder="/* 在這裡貼上你的無敵語法 */"></textarea>
-            <h3>語法大全（點了就加進去）</h3>
-            <div class="btns" id="snips"></div>
-            <div class="btns"><button class="btn" onclick="copyThemeToCss()">把基本版型複製進來改</button><button class="btn" onclick="setK('css','');syncInputs();changed()">清空自訂語法</button></div>
-          </div>
-
-          <!-- 音樂 -->
-          <div class="pane" data-pane="music">
-            <h3>復古音樂盒</h3>
-            <div id="trackList"></div>
-            <div class="row"><label>自訂音樂</label><input type="url" data-k="music.url" placeholder="https://…/song.mp3（留空＝用內建曲）"></div>
-            <label class="chk"><input type="checkbox" data-k="music.autoplay"> 朋友來參觀時自動播放（會先跳「點此播放」）</label>
-            <div class="btns"><button class="btn go" onclick="Music.toggle()" id="playBtn">▶ 播放</button></div>
-            <p class="hint">內建曲都是用 Web Audio 即時合成的 8-bit 原創小曲，不用任何音檔。</p>
-          </div>
-
-          <!-- 留言 -->
-          <div class="pane" data-pane="guest">
-            <h3>最新留言</h3>
-            <div class="list" id="cmtList"></div>
-            <div class="btns"><button class="btn" onclick="delCmt()">刪除選取的留言</button></div>
-            <h3>幫自己灌留言（誤）</h3>
-            <div class="row"><label>暱稱</label><input type="text" id="cName" value="路過的"></div>
-            <div class="row"><label>內容</label><input type="text" id="cText" placeholder="版很漂亮耶～回訪^^"></div>
-            <div class="btns"><button class="btn go" onclick="addCmt()">送出留言</button></div>
-          </div>
-
-          <!-- 分享 -->
-          <div class="pane" data-pane="share">
-            <h3>產生分享網址</h3>
-            <p class="hint">整個小站（文字、版型、語法、音樂設定）都壓縮進網址裡，不用伺服器。貼給朋友就能看到你的版！</p>
-            <div class="btns"><button class="btn go" onclick="makeShare()">產生網址</button><button class="btn" onclick="copyShare()">複製</button><button class="btn" onclick="openShare()">開新視窗預覽</button></div>
-            <textarea class="share-out" id="shareOut" readonly></textarea>
-            <p class="hint" id="shareInfo"></p>
-            <h3>匯出</h3>
-            <div class="btns"><button class="btn" onclick="exportPng()">存成 PNG 截圖</button></div>
-            <p class="hint" id="pngInfo"></p>
-            <h3>危險區</h3>
-            <div class="btns"><button class="btn" onclick="resetAll()">重設成預設小站</button></div>
+<div class="page" id="page">
+      <div class="wrap">
+        <!-- 頁首 -->
+        <div class="ph">
+          <a class="logo" onclick="scrollTop0()">吾名小站</a>
+          <nav class="icons">
+            <a onclick="openAlbums()"><svg viewBox="0 0 42 38"><rect x="3" y="4" width="36" height="29" rx="3" fill="#4a90c8"/><rect x="7" y="8" width="28" height="21" fill="#dff2ff"/><path d="M8 28l9-10 7 7 5-5 6 8z" fill="#5aa34a"/><circle cx="28" cy="14" r="3.5" fill="#ffcf3a"/></svg>相簿</a>
+            <a href="blog.html"><svg viewBox="0 0 42 38"><rect x="6" y="3" width="26" height="31" rx="2" fill="#fff" stroke="#4a90c8" stroke-width="2.5"/><path d="M11 10h16M11 16h16M11 22h10" stroke="#4a90c8" stroke-width="2.5"/><path d="M29 27l8-8 3 3-8 8h-3z" fill="#e0007a"/><rect x="26" y="1" width="15" height="9" rx="2" fill="#e00"/><text x="28" y="8.5" font-size="7" fill="#fff" font-family="Verdana" font-weight="bold">NEW</text></svg>網誌</a>
+            <a onclick="toggleMusic(true)"><svg viewBox="0 0 42 38"><circle cx="21" cy="19" r="16" fill="#fff" stroke="#2b7bc0" stroke-width="3.5"/><path d="M16 11v16l13-8z" fill="#2b7bc0"/></svg>影音</a>
+            <a onclick="leaveMsg()"><svg viewBox="0 0 42 38"><rect x="3" y="5" width="34" height="22" rx="4" fill="#fff" stroke="#6a8aa8" stroke-width="2.5"/><path d="M11 27l-3 8 9-8z" fill="#6a8aa8"/><path d="M10 13h20M10 19h14" stroke="#6a8aa8" stroke-width="2.5"/></svg>哈啦</a>
+            <a onclick="openAlbums()"><svg viewBox="0 0 42 38"><circle cx="14" cy="12" r="6" fill="#5b8bd0"/><path d="M3 35c0-9 5-14 11-14s11 5 11 14z" fill="#5b8bd0"/><circle cx="29" cy="14" r="5" fill="#f08a3a"/><path d="M20 35c0-8 4-11 9-11s10 3 10 11z" fill="#f08a3a"/></svg>找朋友</a>
+            <a onclick="openPK()"><svg viewBox="0 0 42 38"><rect x="4" y="5" width="34" height="28" rx="3" fill="#2d6fb8"/><text x="8" y="26" font-size="17" fill="#fff" font-family="Impact,Verdana" font-weight="bold">PK</text><path d="M30 8l5 0-3 8z" fill="#ffcf3a"/></svg>PK擂台</a>
+            <a onclick="leaveMsg()"><svg viewBox="0 0 42 38"><rect x="4" y="4" width="28" height="20" rx="3" fill="#fff" stroke="#6a8aa8" stroke-width="2.5"/><circle cx="12" cy="14" r="2" fill="#6a8aa8"/><circle cx="18" cy="14" r="2" fill="#6a8aa8"/><circle cx="24" cy="14" r="2" fill="#6a8aa8"/><path d="M30 26c4 0 6 3 6 6M30 30c2 0 3 1 3 3" stroke="#4a90c8" stroke-width="2.2" fill="none"/></svg>嘀咕</a>
+          </nav>
+          <div class="ph-r">
+            <div class="top"><a>設為首頁</a><a>服務說明</a><a>吾名奇摩</a><a>加入VIP</a><a class="hot">消費大調查</a></div>
+            <div class="flags"><i style="background:linear-gradient(#e00 50%,#e00 0);background:linear-gradient(90deg,#00a 0 50%,transparent 0),#e00;background-size:100% 50%,100%;background-repeat:no-repeat"></i><i style="background:#d00;position:relative"></i><i style="background:radial-gradient(circle at 40% 40%,#9ef,#26a 60%,#185);border-radius:50%;width:15px"></i></div>
+            <div class="cats" id="cats"></div>
           </div>
         </div>
 
-        <div class="stage">
-          <div class="stage-bar"><b>預覽</b><span id="stageUrl"></span><span class="sp"></span><button class="btn sm" onclick="Music.toggle()" id="playBtn2">▶ 音樂</button></div>
-          <iframe id="frame" title="網誌預覽"></iframe>
-          <div class="bgm" id="bgm" onclick="bgmGo()">♪ ♫ ♪<b>本站有背景音樂</b>點這裡開始播放<br>（太大聲請自行調整音量 ^^"）</div>
+        <div class="cols">
+          <!-- 左欄 -->
+          <main>
+            <form class="bar" onsubmit="doSearch(event)">
+              <input id="q" type="text" placeholder="" aria-label="搜尋">
+              <select id="qType"><option>文章搜尋</option><option>相簿搜尋</option><option>找朋友</option></select>
+              <button>搜　尋</button>
+            </form>
+            <div class="results" id="results"></div>
+
+            <div class="gram"><b>留聲機</b><div class="msg" id="gram"></div><a onclick="leaveMsg()">我要留言</a></div>
+
+            <div class="hot-h">
+              <h2>熱門相簿</h2>
+              <button data-g="m" class="on">再冷也要看帥哥</button>
+              <button data-g="f">吾名精選正妹相簿</button>
+            </div>
+            <div class="albums" id="albums"></div>
+            <div class="hot-f"><a class="pk" onclick="openPK()">帥哥正妹擂台，只有最好，由你決定</a><span class="sp"></span><a class="more" onclick="joinAlbum()" id="joinLink">是男生就快來報名</a><a class="more" onclick="renderAlbums(true)">換一批熱門相簿</a></div>
+
+            <div class="news">
+              <div class="news-h"><b>新聞<br>焦點</b><div class="hl" id="newsHl"></div><a onclick="nextNews()">下一則 ▶</a></div>
+              <p id="newsP"></p>
+            </div>
+
+            <div class="mid">
+              <div>
+                <div class="school" onclick="location.href='blog.html'">
+                  <svg viewBox="0 0 60 60" width="58" height="58"><circle cx="30" cy="22" r="15" fill="#fff" stroke="#333" stroke-width="2"/><circle cx="25" cy="20" r="2" fill="#333"/><circle cx="35" cy="20" r="2" fill="#333"/><path d="M24 27q6 5 12 0" stroke="#333" stroke-width="2" fill="none"/><path d="M18 40q12-6 24 0l4 18H14z" fill="#4a90c8"/><path d="M42 30l12-12" stroke="#e8b800" stroke-width="3"/><path d="M52 12l4 4-4 2z" fill="#e8b800"/></svg>
+                  <div><b>吾名高校</b>教你成為部落格達人</div>
+                </div>
+                <div class="box">
+                  <div class="box-h"><span>最新活動</span></div>
+                  <ul id="events"></ul>
+                </div>
+              </div>
+              <div>
+                <div class="ad" onclick="location.href='blog.html'">
+                  <span class="tag">吾名小站 · 網誌</span>
+                  <svg viewBox="0 0 120 120"><circle cx="60" cy="50" r="38" fill="#ffd9b8" stroke="#222" stroke-width="3"/><path d="M22 44q4-36 38-36t38 36q-14-16-38-14T22 44z" fill="#222"/><ellipse cx="46" cy="52" rx="5" ry="7" fill="#222"/><ellipse cx="74" cy="52" rx="5" ry="7" fill="#222"/><ellipse cx="60" cy="74" rx="12" ry="9" fill="#c00"/><path d="M20 120q6-34 40-34t40 34z" fill="#1866ab"/></svg>
+                  <div class="big">想改版找不到<br>語法嗎？</div>
+                  <div class="sub">吾名網誌模擬器　自己的版自己改 ▶</div>
+                </div>
+                <div class="box" style="margin-top:10px">
+                  <div class="box-h"><span>今日人氣網誌</span><a onclick="location.href='blog.html'" style="font-weight:normal">開我的網誌 ▶</a></div>
+                  <ol class="rank" id="rank" style="list-style:none;margin:0;padding:6px 8px"></ol>
+                </div>
+              </div>
+            </div>
+          </main>
+
+          <!-- 右欄 -->
+          <aside>
+            <div class="hi"><span id="hiTxt"></span><a id="logout" onclick="logout()" style="display:none">登出</a></div>
+            <div class="member" id="member"></div>
+            <div class="me-links" id="meLinks" style="display:none"><a onclick="scrollToMaker()">編輯我的大頭貼</a><a onclick="vip()">加入VIP</a><a href="blog.html">設定個人資料</a></div>
+            <div class="slogan" id="slogan"></div>
+            <div class="bgmsw">自動播放背景音樂：
+              <label><input type="radio" name="bgm" value="on" id="bgmOn"> 播放</label>
+              <label><input type="radio" name="bgm" value="off" id="bgmOff"> 關閉</label>
+            </div>
+            <div class="notice"><b>公告區</b><ul id="notice"></ul></div>
+
+            <div class="maker" id="maker">
+              <h3>吾名小站<small>大頭寶製造機</small></h3>
+              <svg class="mk-face" id="mkFace" viewBox="0 0 120 150"></svg>
+              <div class="hint" style="text-align:center;color:#e07800;font-weight:bold">造型：移動滑鼠點選</div>
+              <div class="mk-row" id="mkHair"></div>
+              <div class="mk-row" id="mkColor"></div>
+              <div class="mk-row"><label><input type="checkbox" id="mkGlasses"> 戴眼鏡</label>　<label><input type="checkbox" id="mkBlush"> 腮紅</label>　<a onclick="mkRandom()">隨機</a></div>
+              <div class="mk-go"><b>訂作</b>你的大頭寶 <button class="go-btn" onclick="mkSave()">go</button></div>
+            </div>
+          </aside>
+        </div>
+
+        <div class="foot">
+          <div><a>關於吾名</a>|<a>服務條款</a>|<a>隱私權政策</a>|<a>廣告刊登</a>|<a>徵才</a>|<a href="blog.html">網誌模擬器</a></div>
+          <div>吾名小站 MyName Station © 2005–2009 · 本站最佳瀏覽解析度 1024×768 · 建議使用 IE 6.0 以上版本</div>
+          <div style="font-size:11px;color:#aaa">本頁為懷舊致敬的模擬作品，所有人物、相簿與新聞皆為虛構。</div>
         </div>
       </div>
     </div>
-  </div>
 
-  <div class="statusbar"><span id="status">完成</span><span>🌐 網際網路</span></div>
-  <div class="taskbar">
-    <button class="start" onclick="goHome()">開始</button>
-    <span class="task">即時通</span><span class="task on" id="taskTitle">吾名小站</span><span class="task">小畫家</span>
-    <span class="tray" id="clock"></span>
-  </div>
+<div class="toast" id="status"></div>
+
+<!-- 對話框 -->
+<div class="dlg-bg" id="dlgBg" onclick="if(event.target===this)closeDlg()">
+  <div class="dlg"><div class="titlebar"><span class="t" id="dlgT"></span><span class="tb-btn x" onclick="closeDlg()">×</span></div><div class="dlg-c" id="dlgC"></div></div>
 </div>
 
 <script>
 'use strict';
-/* =========================================================
-   吾名小站 MyName Station — 2005 懷舊網誌模擬器
-   ========================================================= */
-const LS_KEY = 'myname-station-v1';
-const HTML2IMG = 'https://cdn.jsdelivr.net/npm/html-to-image@1.11.11/dist/html-to-image.js';
-const FONT = "'PMingLiU','新細明體','MingLiU','細明體',monospace,serif";
-
-const MOODS = [
-  ['開心', '^_^'], ['興奮', '≧▽≦'], ['戀愛中', '(*/ω＼*)'], ['無聊', '=.=+'], ['想睡', '(－.－)…zzz'],
-  ['憂鬱', '(〒︿〒)'], ['生氣', '(╯‵□′)╯︵┴─┴'], ['囧', '囧rz'], ['耍廢', 'ㄎㄎ']
-];
-const KAOMOJI = ['^^b', 'XD', 'Orz', '囧', '≧▽≦', '(′・ω・‵)', '\\^o^/', '(〒︿〒)', '^_^"', '∩_∩', '3Q', '(╯‵□′)╯︵┴─┴', '><', '=口=', '…囧rz'];
-const VISITORS = ['xX小雨Xx', 'momo0214', '耍廢企鵝', 'kitty_520', '阿弟仔', 'sweet.cherry', '火星人來訪', 'lonely_boy', '布丁不要走', 'bluesky1987', '小葵花', '天使的眼淚'];
-
-const DEFAULT = {
-  v: 1,
-  user: 'ming0921',
-  title: '☆ 小明の秘密基地 ☆',
-  subtitle: '人生就像一盒巧克力……我只想吃黑的那顆 XD',
-  marquee: '歡迎光臨～～看完文章記得留言喔！不准當潛水艇 >"<',
-  theme: 'classic',
-  css: '',
-  profile: {
-    nick: '小明',
-    avatar: '',
-    mood: '開心',
-    sign: '期末考 all pass 就去墾丁！',
-    about: '處女座 / O型\n喜歡：聽音樂、包夜、拍大頭貼\n討厭：早八、考試、只看不留言的人'
-  },
-  posts: [
-    { title: '今天終於把網誌版型弄好了啦 ^^b', date: '2005-08-12T23:45', mood: '興奮', views: 87,
-      body: '花了一整個下午在研究 CSS 語法……\n從別人家複製了一堆語法，結果整個版跑掉 囧\n後來發現是 #links 的寬度設錯 Orz\n\n總之！吾名小站正式開張～\n有經過的朋友記得在留言板留個言喔 ≧▽≦\n<font color="#ff3399">不准只看不留言！</font>' },
-    { title: '期末考結束 → 網咖包夜', date: '2005-08-10T21:03', mood: '耍廢', views: 52,
-      body: '考完最後一科直接衝網咖\n跟阿弟仔他們連線打到天亮 XD\n開了 8 小時，眼睛快瞎了\n\n回家的路上買了一杯珍奶\n<b>人生的意義大概就是這樣吧</b>（誤）' },
-    { title: '睡不著的夜晚', date: '2005-08-03T01:12', mood: '憂鬱', views: 133,
-      body: '即時通上的大家一個一個離線了\n只剩我還掛在線上\n狀態改成「忙碌」但其實一點都不忙\n\n……有些話，打了又刪掉。' }
-  ],
-  comments: [
-    { name: '布丁不要走', text: '沙發！！！', date: '2005-08-13 00:02' },
-    { name: 'momo0214', text: '版很口愛耶！語法可以分享嗎^^', date: '2005-08-13 09:41' },
-    { name: '阿弟仔', text: '推推～來回訪囉 下次再一起包夜', date: '2005-08-13 12:20' }
-  ],
-  music: { track: 0, url: '', autoplay: true },
-  effects: { sparkle: true, marquee: true, noRightClick: false },
-  counter: 5201
-};
-
-/* ---------------- 版型 ---------------- */
-const THEMES = {
-  classic: { name: '吾名原味藍', sw: 'linear-gradient(#a8d8f8 50%,#7cc242 0)', css:
-`body{background:#dfeffa;color:#333}
-#container{background:#fff;border:1px solid #8fbfe0}
-#banner{background:linear-gradient(#a8d8f8,#e8f6ff);border-bottom:4px solid #7cc242}
-#pageheader a{color:#fff;text-decoration:none;text-shadow:-1px -1px 0 #1a6fb3,1px -1px 0 #1a6fb3,-1px 1px 0 #1a6fb3,1px 1px 0 #1a6fb3,2px 3px 0 #1a6fb3}
-.description{color:#1a6fb3}
-.datediv{color:#5a9a2a;font-weight:bold}
-.title{color:#1a6fb3;font-size:13px;font-weight:bold;border-bottom:1px dashed #8fbfe0}
-.posted{color:#888;font-size:11px;text-align:right;border-top:1px dotted #ccc}
-.sidetitle{background:#7cc242;color:#fff;font-weight:bold;padding:2px 6px}
-.side{border:1px solid #c9e6f8;border-top:0}
-a{color:#1a6fb3}
-#footer{color:#888;border-top:1px solid #c9e6f8}` },
-
-  pink: { name: '粉紅公主', sw: 'radial-gradient(#ff8fbf 30%,#ffe6f0 32%) 0 0/8px 8px', css:
-`body{background:#ffe6f0 radial-gradient(#ffc2db 18%,transparent 20%) 0 0/16px 16px;color:#a0406a}
-#container{background:#fff;border:3px double #ff8fbf}
-#banner{background:linear-gradient(#ffc9e0,#fff0f6);text-align:center;border-bottom:2px dotted #ff8fbf}
-#pageheader a{color:#ff4f9a;text-decoration:none;text-shadow:1px 1px 0 #fff,2px 2px 0 #ffb6d5;animation:glitter 1s steps(2) infinite}
-.description{color:#d0609a}
-.datediv{background:#ffe0ee;color:#c04080;padding:0 8px;display:inline-block;border-radius:8px}
-.title{color:#ff4f9a;font-weight:bold;font-size:13px}
-.title:before{content:"♥ "}
-.posted{color:#d78ab0;border-top:1px dashed #ffb6d5;font-size:11px}
-.sidetitle{background:#ff8fbf;color:#fff;text-align:center;border-radius:8px 8px 0 0;padding:2px}
-.side{background:#fff5fa;border:1px dashed #ff8fbf;border-top:0}
-a{color:#ff4f9a}
-#footer{color:#d78ab0}` },
-
-  emo: { name: '黑色系視覺', sw: 'linear-gradient(#000 70%,#900 0)', css:
-`body{background:#000;color:#aaa}
-#container{background:#111;border:1px solid #333}
-#banner{background:#000;border-bottom:1px solid #600;letter-spacing:4px}
-#pageheader a{color:#fff;text-decoration:none;font-family:Georgia,serif;font-style:italic;font-weight:normal}
-.description{color:#900}
-.datediv{color:#666;font-size:11px}
-.title{color:#fff;border-left:4px solid #900;padding-left:6px}
-.innertext{color:#ccc}
-.posted{color:#555;font-size:11px;text-align:right}
-.sidetitle{color:#c00;border-bottom:1px solid #600;letter-spacing:2px}
-.side{color:#888}
-a{color:#c33}
-::selection{background:#900;color:#fff}
-#footer{color:#444}` },
-
-  milk: { name: '草莓牛奶', sw: 'repeating-conic-gradient(#ffcfcf 0 25%,#fff8e7 0 50%) 0 0/12px 12px', css:
-`body{background:#fff8e7 repeating-conic-gradient(#ffdede 0 25%,#fff8e7 0 50%) 0 0/24px 24px;color:#7a4b3a}
-#container{background:#fffdf7;border:2px solid #e8a0a0;box-shadow:5px 5px 0 #e8a0a0}
-#banner{background:#ffdede;border-bottom:2px solid #e8a0a0}
-#pageheader a{color:#c0504d;text-decoration:none}
-.description{color:#a06a5a}
-.datediv{color:#c0504d}
-.title{color:#7a4b3a;font-weight:bold;background:#fff0e0;padding:2px 6px;border-left:6px solid #e8a0a0}
-.posted{color:#b08070;font-size:11px;text-align:right}
-.sidetitle{background:#c0504d;color:#fff8e7;padding:2px 6px;font-weight:bold}
-.side{background:#fff;border:2px solid #e8a0a0;border-top:0}
-a{color:#c0504d}
-#footer{color:#b08070}` },
-
-  win98: { name: '經典灰視窗', sw: 'linear-gradient(90deg,#0a246a,#a6caf0 50%,#d4d0c8 0)', css:
-`body{background:#008080;color:#000}
-#container{background:#d4d0c8;border:2px outset #fff;padding:3px}
-#banner{background:linear-gradient(90deg,#0a246a,#a6caf0);padding:6px 10px}
-#pageheader{font-size:14px}
-#pageheader a{color:#fff;text-decoration:none}
-.description{color:#fff}
-.blogbody{background:#fff;border:2px inset #fff;padding:8px}
-.title{font-weight:bold;color:#0a246a}
-.posted{color:#808080;font-size:11px;border-top:1px solid #d4d0c8}
-.sidetitle{background:linear-gradient(90deg,#0a246a,#a6caf0);color:#fff;font-weight:bold;padding:1px 4px}
-.side{background:#d4d0c8;border:1px solid #808080;border-top:0}
-a{color:#00f}
-#footer{color:#fff}` }
-};
-
-const SNIPPETS = [
-  ['左右欄互換', '#content{float:right}\n#links{float:left}'],
-  ['愛心游標', 'body,a{cursor:url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'20\' height=\'20\'%3E%3Ctext y=\'16\' font-size=\'16\' fill=\'%23ff3399\'%3E%E2%99%A5%3C/text%3E%3C/svg%3E") 4 4,auto}'],
-  ['捲軸變色', 'html{scrollbar-color:#ff8fbf #fff0f6}'],
-  ['標題閃亮亮', '#pageheader a{animation:glitter .6s steps(2) infinite}'],
-  ['大頭貼圓形', '.avatar{border-radius:50%}'],
-  ['圖片灰階', '.innertext img{filter:grayscale(1)}\n.innertext img:hover{filter:none}'],
-  ['文章框框', '.blogbody{border:1px dashed #999;padding:8px}'],
-  ['藏起誰來我家', '.visitors{display:none}'],
-  ['背景圖平鋪', 'body{background-image:url("https://圖片網址.gif");background-repeat:repeat}'],
-  ['連結滑過變色', 'a:hover{color:#ff3399;background:#ffffcc}']
-];
-
-/* 原創 8-bit 小曲：每格 = 八分音符，'-' = 延長 */
-const TRACKS = [
-  { name: '放學後的電腦教室', bpm: 132, wave: 'square',
-    lead: 'E5 G5 C6 G5 A5 - G5 - E5 G5 A5 G5 E5 - D5 - C5 E5 G5 E5 F5 - E5 - D5 E5 F5 D5 C5 - - -',
-    bass: 'C3 - G3 - A2 - E3 - F2 - C3 - G2 - G3 - C3 - G3 - F2 - C3 - G2 - B2 - C3 - - -' },
-  { name: '半夜偷掛線上', bpm: 96, wave: 'triangle',
-    lead: 'A4 C5 E5 A5 G5 - E5 - F5 E5 D5 C5 B4 - - - A4 C5 E5 G5 F5 - D5 - E5 D5 C5 B4 A4 - - -',
-    bass: 'A2 - - - E3 - - - F2 - - - G2 - - - A2 - - - C3 - - - D3 - - - E3 - - -' },
-  { name: '網咖包夜進行曲', bpm: 156, wave: 'square',
-    lead: 'G5 G5 E5 G5 A5 G5 E5 C5 D5 D5 E5 D5 C5 - - - G5 G5 E5 G5 C6 B5 A5 G5 F5 E5 D5 E5 C5 - - -',
-    bass: 'C3 G3 C3 G3 C3 G3 C3 G3 G2 D3 G2 D3 C3 G3 C3 G3 C3 G3 C3 G3 F2 C3 F2 C3 G2 D3 G2 D3 C3 G3 C3 -' }
-];
-
-/* ---------------- 工具 ---------------- */
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-const clone = o => JSON.parse(JSON.stringify(o));
-const getK = (o, p) => p.split('.').reduce((a, k) => a?.[k], o);
-function setK(p, v, o = S) { const ks = p.split('.'); const last = ks.pop(); ks.reduce((a, k) => a[k] ??= {}, o)[last] = v; }
-const lsGet = k => { try { return localStorage.getItem(k); } catch { return null; } };
-const lsSet = (k, v) => { try { localStorage.setItem(k, v); return true; } catch { return false; } };
+const lsGet = (k, d) => { try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch { return d; } };
+const lsSet = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} };
 const pad = n => String(n).padStart(2, '0');
 
-function normalize(o) {
-  const d = clone(DEFAULT);
-  if (!o || typeof o !== 'object') return d;
-  const out = Object.assign(d, o);
-  out.profile = Object.assign(clone(DEFAULT.profile), o.profile);
-  out.music = Object.assign(clone(DEFAULT.music), o.music);
-  out.effects = Object.assign(clone(DEFAULT.effects), o.effects);
-  out.posts = Array.isArray(o.posts) ? o.posts : clone(DEFAULT.posts);
-  out.comments = Array.isArray(o.comments) ? o.comments : clone(DEFAULT.comments);
-  if (!THEMES[out.theme]) out.theme = 'classic';
-  return out;
-}
-
-/* 允許當年的 HTML（font、marquee、b…），但拿掉會執行程式的東西 */
-function sanitize(html) {
-  const doc = new DOMParser().parseFromString('<body>' + html + '</body>', 'text/html');
-  doc.querySelectorAll('script,iframe,object,embed,link,meta,base,form,frame,frameset').forEach(n => n.remove());
-  doc.body.querySelectorAll('*').forEach(el => {
-    [...el.attributes].forEach(a => {
-      const n = a.name.toLowerCase();
-      if (n.startsWith('on') || (/^(href|src|xlink:href|action|formaction|srcdoc)$/.test(n) && /^\s*(javascript|vbscript|data:text)/i.test(a.value)))
-        el.removeAttribute(a.name);
-    });
-  });
-  return doc.body.innerHTML;
-}
-
-const avCache = {};
-function pixelAvatar(seed) {
-  if (avCache[seed]) return avCache[seed];
+function rng(seed) {
   let h = 2166136261;
   for (const c of String(seed)) h = Math.imul(h ^ c.charCodeAt(0), 16777619) >>> 0;
   h ||= 1;
-  const rnd = () => { h ^= h << 13; h >>>= 0; h ^= h >>> 17; h ^= h << 5; h >>>= 0; return h / 4294967296; };
-  const c = document.createElement('canvas'); c.width = c.height = 8;
-  const x = c.getContext('2d'); const hue = Math.floor(rnd() * 360);
-  x.fillStyle = `hsl(${hue},70%,92%)`; x.fillRect(0, 0, 8, 8);
-  x.fillStyle = `hsl(${hue},65%,48%)`;
-  for (let i = 0; i < 8; i++) for (let j = 0; j < 4; j++) if (rnd() > .5) { x.fillRect(j, i, 1, 1); x.fillRect(7 - j, i, 1, 1); }
-  return avCache[seed] = c.toDataURL();
+  return () => { h ^= h << 13; h >>>= 0; h ^= h >>> 17; h ^= h << 5; h >>>= 0; return h / 4294967296; };
 }
+const pick = (r, a) => a[Math.floor(r() * a.length)];
+const shuffle = (a, r = Math.random) => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
 
-function fmtDate(s) {
-  const d = new Date(s);
-  if (isNaN(d)) return { day: s || '', time: '' };
-  return { day: `${d.getFullYear()}/${pad(d.getMonth() + 1)}/${pad(d.getDate())} 星期${'日一二三四五六'[d.getDay()]}`, time: `${pad(d.getHours())}:${pad(d.getMinutes())}` };
-}
-const moodFace = m => (MOODS.find(x => x[0] === m) || ['', ''])[1];
+/* ================= 自拍產生器（純 SVG，全部虛構人物） ================= */
+const HAIR_M = ['emo', 'spiky', 'cap', 'short'];
+const HAIR_F = ['long', 'bangs', 'twin', 'curly'];
+const HAIR_COLORS = ['#1a1a1a', '#3b2416', '#6b3e1f', '#a0622d', '#c9a03a'];
 
-/* ---------------- 狀態 ---------------- */
-let S, viewMode = false, sharedState = null, curPost = 0, curCmt = -1;
-let hits = 0;
-
-function readHash() {
-  const m = location.hash.match(/^#data=(.+)$/);
-  if (!m || typeof LZString === 'undefined') return null;
-  try { return normalize(JSON.parse(LZString.decompressFromEncodedURIComponent(m[1]))); } catch { return null; }
-}
-function loadLocal() {
-  try { return normalize(JSON.parse(lsGet(LS_KEY))); } catch { return normalize(null); }
-}
-
-let saveT;
-function save() {
-  if (viewMode) return;
-  clearTimeout(saveT);
-  saveT = setTimeout(() => {
-    const ok = lsSet(LS_KEY, JSON.stringify(S));
-    const d = new Date();
-    $('#savedAt').textContent = ok ? `✔ 已自動儲存 ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}` : '⚠ 瀏覽器不讓我存檔（無痕模式？）';
-  }, 400);
-}
-function changed() { render(); save(); refreshChrome(); }
-
-/* ---------------- 網誌 HTML ---------------- */
-const BASE_CSS = `
-html,body{margin:0}
-body{font-family:${FONT};font-size:12px;line-height:1.5;-webkit-font-smoothing:none;-moz-osx-font-smoothing:auto;font-smooth:never;text-rendering:optimizeSpeed;padding:12px 0 20px}
-#container{width:760px;margin:0 auto}
-#banner{padding:26px 16px 18px}
-#pageheader{margin:0;font-size:24px;line-height:1.3}
-.description{margin-top:6px}
-#content{float:left;width:500px;padding:12px}
-#links{float:right;width:212px;padding:12px 12px 12px 0}
-#footer{clear:both;text-align:center;padding:10px;font-size:11px}
-.marquee{margin-bottom:12px;border:1px dashed currentColor;padding:2px 4px;opacity:.85}
-.blogbody{margin-bottom:26px}
-.datediv{margin-bottom:2px}
-.title{margin-bottom:4px}
-.mood{font-size:11px;opacity:.8;margin-bottom:6px}
-.innertext{margin-bottom:8px;word-wrap:break-word}
-.innertext img{max-width:100%}
-.posted{padding-top:2px}
-.sidetitle{margin-top:0}
-.side{margin-bottom:12px;padding:6px;font-size:12px}
-.profile{text-align:center}
-.avatar{width:96px;height:96px;object-fit:cover;border:1px solid #ccc;background:#fff;display:block;margin:2px auto 4px}
-img.pix{image-rendering:pixelated}
-.nick{font-weight:bold;font-size:13px}
-.about{text-align:left;margin-top:4px;font-size:11px}
-.visitors{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;text-align:center;font-size:11px}
-.visitors img{width:40px;height:40px;display:block;margin:0 auto;border:1px solid #ccc;image-rendering:pixelated}
-.visitors span{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.digits span{display:inline-block;background:#111;color:#3f3;font:bold 13px/18px monospace;width:12px;text-align:center;margin-right:1px;border:1px solid #555}
-.lcd{background:#a8c890;color:#123;font:12px/1.6 ${FONT};padding:1px 4px;border:2px inset #ddd;white-space:nowrap;overflow:hidden;margin-bottom:4px}
-.lcd span{display:inline-block;padding-left:100%;animation:scroll 9s linear infinite}
-.musicbox button{font:11px ${FONT};padding:0 6px;cursor:pointer}
-.eq{display:inline-flex;gap:1px;align-items:flex-end;height:12px;margin-left:4px;vertical-align:middle}
-.eq i{width:3px;background:currentColor;height:3px}
-.playing .eq i{animation:eq .5s ease-in-out infinite alternate}
-.playing .eq i:nth-child(2){animation-delay:.15s}.playing .eq i:nth-child(3){animation-delay:.3s}.playing .eq i:nth-child(4){animation-delay:.1s}
-.cmt{border-bottom:1px dotted #ccc;padding:3px 0}
-.cmt:last-child{border:0}
-.cdate{display:block;font-size:10px;opacity:.6}
-.glitter{animation:glitter .8s steps(2) infinite}
-.sparkle{position:absolute;pointer-events:none;font-size:12px;animation:fall .8s linear forwards;z-index:9999}
-@keyframes glitter{50%{color:#ffcc00;text-shadow:0 0 4px #fff}}
-@keyframes scroll{to{transform:translateX(-100%)}}
-@keyframes eq{to{height:12px}}
-@keyframes fall{to{transform:translateY(24px) scale(.3);opacity:0}}
-`;
-
-function blogHTML(st) {
-  const prof = st.profile;
-  const avatar = prof.avatar ? `<img class="avatar" src="${esc(prof.avatar)}" alt="大頭貼">` : `<img class="avatar pix" src="${pixelAvatar(st.user)}" alt="大頭貼">`;
-  const posts = st.posts.length ? st.posts.map(p => {
-    const d = fmtDate(p.date);
-    const body = sanitize(String(p.body || '').replace(/\r?\n/g, '<br>'));
-    return `<div class="blogbody">
-  <div class="datediv">${esc(d.day)}</div>
-  <div class="title">${esc(p.title)}</div>
-  ${p.mood ? `<div class="mood">心情：${esc(p.mood)} ${esc(moodFace(p.mood))}</div>` : ''}
-  <div class="innertext">${body}</div>
-  <div class="posted">由 ${esc(prof.nick || st.user)} 發表於 ${esc(d.time)} | <a href="#">回應(${st.comments.length})</a> | <a href="#">引用(0)</a> | 人氣(${esc(p.views ?? 0)})</div>
-</div>`;
-  }).join('\n') : '<div class="blogbody"><div class="innertext">這個人很懶，什麼都沒寫……</div></div>';
-
-  const seed = st.user.length;
-  const vis = VISITORS.slice(seed % 4, seed % 4 + 6).map(n => `<div><img src="${pixelAvatar(n)}" alt=""><span>${esc(n)}</span></div>`).join('');
-  const total = String((+st.counter || 0) + hits).padStart(7, '0');
-  const tr = st.music.url ? '自訂音樂' : (TRACKS[st.music.track] || TRACKS[0]).name;
-  const cm = st.comments.slice(-6).reverse().map(c => `<div class="cmt"><b>${esc(c.name)}</b>：${esc(c.text)}<span class="cdate">${esc(c.date)}</span></div>`).join('') || '<div class="cmt">還沒有人留言 QQ</div>';
-
-  return `<div id="container">
-<div id="banner">
-  <h1 id="pageheader"><a href="#">${esc(st.title)}</a></h1>
-  <div class="description">${esc(st.subtitle)}</div>
-</div>
-<div id="content">
-${st.effects.marquee && st.marquee ? `<div class="marquee"><marquee scrollamount="4">${esc(st.marquee)}</marquee></div>` : ''}
-${posts}
-</div>
-<div id="links">
-  <div class="sidetitle">個人資料</div>
-  <div class="side profile">${avatar}<div class="nick">${esc(prof.nick)}</div><div>心情：${esc(prof.mood)} ${esc(moodFace(prof.mood))}</div><div class="sign">${esc(prof.sign)}</div><div class="about">${esc(prof.about).replace(/\n/g, '<br>')}</div></div>
-  <div class="sidetitle">誰來我家</div>
-  <div class="side"><div class="visitors">${vis}</div></div>
-  <div class="sidetitle">人氣計數器</div>
-  <div class="side counter">今日人氣：${(st.user.length * 7 + hits) % 97 + 3}<br>累積人氣：<span class="digits">${[...total].map(c => `<span>${c}</span>`).join('')}</span></div>
-  <div class="sidetitle">音樂盒</div>
-  <div class="side musicbox${Music.playing ? ' playing' : ''}"><div class="lcd"><span>♪ ${esc(tr)} ♪</span></div><button data-act="prev">|◀</button> <button data-act="toggle">${Music.playing ? '■ 停止' : '▶ 播放'}</button> <button data-act="next">▶|</button><span class="eq"><i></i><i></i><i></i><i></i></span></div>
-  <div class="sidetitle">最新留言</div>
-  <div class="side comments">${cm}</div>
-</div>
-<div id="footer">Powered by 吾名小站 MyName Station · 本站最佳瀏覽解析度 1024×768 · 建議使用 IE 6.0 以上瀏覽</div>
-</div>`;
-}
-
-/* ---------------- 預覽 iframe ---------------- */
-const frame = $('#frame');
-let fdoc;
-function initFrame() {
-  frame.srcdoc = `<!doctype html><html><head><meta charset="utf-8"><base target="_blank"><style id="base">${BASE_CSS}</style><style id="theme"></style><style id="user"></style></head><body></body></html>`;
-  frame.onload = () => {
-    fdoc = frame.contentDocument;
-    fdoc.addEventListener('click', e => {
-      const b = e.target.closest('[data-act]');
-      if (b) { e.preventDefault(); Music[b.dataset.act](); return; }
-      if (e.target.closest('a[href="#"]')) e.preventDefault();
-    });
-    fdoc.addEventListener('contextmenu', e => { if (cur().effects.noRightClick) { e.preventDefault(); alert('本站禁止按右鍵！要語法請留言 ^^b'); } });
-    let last = 0;
-    fdoc.addEventListener('mousemove', e => {
-      if (!cur().effects.sparkle || e.timeStamp - last < 40) return;
-      last = e.timeStamp;
-      const s = fdoc.createElement('span');
-      s.className = 'sparkle'; s.textContent = '✦★✧＊'[Math.random() * 4 | 0];
-      s.style.cssText = `left:${e.pageX + 6}px;top:${e.pageY + 4}px;color:hsl(${Math.random() * 360},90%,60%)`;
-      fdoc.body.appendChild(s);
-      setTimeout(() => s.remove(), 800);
-    });
-    render(true);
-  };
-}
-const cur = () => viewMode ? sharedState : S;
-
-let renderT;
-function render(now) {
-  clearTimeout(renderT);
-  const go = () => {
-    if (!fdoc) return;
-    const st = cur();
-    fdoc.title = st.title;
-    fdoc.getElementById('theme').textContent = THEMES[st.theme].css;
-    fdoc.getElementById('user').textContent = st.css;
-    const y = fdoc.documentElement.scrollTop;
-    fdoc.body.innerHTML = blogHTML(st);
-    fdoc.documentElement.scrollTop = y;
-  };
-  now === true ? go() : (renderT = setTimeout(go, 120));
-}
-
-/* ---------------- 音樂盒 ---------------- */
-function noteFreq(n) {
-  const m = /^([A-G])(#?)(\d)$/.exec(n); if (!m) return 0;
-  const midi = (+m[3] + 1) * 12 + { C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11 }[m[1]] + (m[2] ? 1 : 0);
-  return 440 * 2 ** ((midi - 69) / 12);
-}
-function parseSeq(str) {
-  const toks = str.trim().split(/\s+/), ev = [];
-  toks.forEach((t, i) => { if (t !== '-') { let len = 1; while (toks[i + len] === '-') len++; ev.push({ at: i, f: noteFreq(t), len }); } });
-  return { ev, steps: toks.length };
-}
-const Music = {
-  ctx: null, playing: false, timer: null, audio: null,
-  get st() { return cur(); },
-  ensure() { if (!this.ctx) { this.ctx = new (window.AudioContext || window.webkitAudioContext)(); this.gain = this.ctx.createGain(); this.gain.gain.value = .12; this.gain.connect(this.ctx.destination); } },
-  start() {
-    this.stop(true);
-    const m = this.st.music;
-    if (m.url) {
-      this.audio = new Audio(m.url); this.audio.loop = true;
-      this.audio.play().catch(() => { setStatus('音樂網址播不了 QQ 換一首試試'); this.stop(); });
-    } else {
-      this.ensure(); this.ctx.resume();
-      const t = TRACKS[m.track] || TRACKS[0];
-      const lead = parseSeq(t.lead), bass = parseSeq(t.bass), dur = 60 / t.bpm / 2;
-      let step = 0, next = this.ctx.currentTime + .05;
-      const blip = (f, at, len, wave, vol) => {
-        const o = this.ctx.createOscillator(), g = this.ctx.createGain();
-        o.type = wave; o.frequency.value = f;
-        g.gain.setValueAtTime(vol, at); g.gain.exponentialRampToValueAtTime(.001, at + len * dur * .95);
-        o.connect(g); g.connect(this.gain); o.start(at); o.stop(at + len * dur);
-      };
-      this.timer = setInterval(() => {
-        while (next < this.ctx.currentTime + .2) {
-          for (const e of lead.ev) if (e.at === step % lead.steps) blip(e.f, next, e.len, t.wave, .5);
-          for (const e of bass.ev) if (e.at === step % bass.steps) blip(e.f, next, e.len, 'triangle', .7);
-          step++; next += dur;
-        }
-      }, 50);
+function hairParts(style, c) {
+  const P = d => `<path d="${d}" fill="${c}"/>`;
+  switch (style) {
+    case 'emo': return { back: '', front: P('M30 70 Q24 34 60 31 Q96 32 91 64 Q84 52 74 52 Q64 74 38 86 Q40 72 30 70Z') };
+    case 'spiky': return { back: '', front: P('M30 64 L27 40 L38 46 L40 24 L50 37 L57 18 L64 35 L75 21 L78 40 L91 30 L88 50 L91 64 Q82 47 60 47 Q38 47 30 64Z') };
+    case 'cap': return { back: '', front: P('M31 64 Q31 48 60 46 Q89 48 89 64Z') +
+      '<path d="M27 56 Q28 22 60 22 Q92 22 93 56Z" fill="#c8202a"/><path d="M86 50 Q106 46 114 56 Q100 60 86 57Z" fill="#8e1018"/><rect x="50" y="30" width="20" height="9" rx="2" fill="#fff"/><text x="52" y="37.5" font-size="7" font-family="Verdana" font-weight="bold" fill="#c8202a">ROCK</text>' };
+    case 'short': return { back: '', front: P('M31 64 Q28 34 60 33 Q92 34 89 64 Q86 48 60 47 Q34 48 31 64Z') };
+    case 'long': return { back: P('M27 62 Q26 28 60 28 Q94 28 93 62 L98 130 Q84 126 80 106 L40 106 Q36 126 22 130Z'), front: P('M30 66 Q26 32 60 31 Q94 32 90 66 Q84 46 66 44 Q50 56 30 66Z') };
+    case 'bangs': return { back: P('M27 62 Q26 28 60 28 Q94 28 93 62 L96 112 Q82 112 80 100 L40 100 Q38 112 24 112Z'), front: P('M30 64 Q27 30 60 30 Q93 30 90 64 L88 57 Q60 61 32 57Z') };
+    case 'twin': return {
+      back: `<ellipse cx="22" cy="92" rx="11" ry="30" fill="${c}"/><ellipse cx="98" cy="92" rx="11" ry="30" fill="${c}"/><circle cx="26" cy="58" r="4" fill="#ff5fa2"/><circle cx="94" cy="58" r="4" fill="#ff5fa2"/>`,
+      front: P('M30 64 Q27 30 60 30 Q93 30 90 64 L86 56 L78 60 L70 54 L60 59 L50 54 L42 60 L34 56Z') };
+    case 'curly': {
+      let b = '';
+      for (let i = 0; i < 16; i++) { const a = Math.PI * (0.95 + i * 0.075), x = 60 + Math.cos(a) * 36, y = 62 + Math.sin(a) * 38; b += `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="11" fill="${c}"/>`; }
+      for (let i = 0; i < 4; i++) b += `<circle cx="${24 + (i % 2) * 4}" cy="${78 + i * 12}" r="10" fill="${c}"/><circle cx="${96 - (i % 2) * 4}" cy="${78 + i * 12}" r="10" fill="${c}"/>`;
+      return { back: b, front: P('M30 62 Q30 34 60 34 Q90 34 90 62 Q80 46 70 50 Q60 42 50 50 Q40 46 30 62Z') };
     }
-    this.playing = true; this.sync();
-  },
-  stop(silent) {
-    clearInterval(this.timer); this.timer = null;
-    if (this.audio) { this.audio.pause(); this.audio = null; }
-    this.playing = false; if (!silent) this.sync();
-  },
-  toggle() { this.playing ? this.stop() : this.start(); },
-  next() { this.skip(1); }, prev() { this.skip(-1); },
-  skip(d) {
-    const m = this.st.music; m.url = m.url && viewMode ? m.url : '';
-    m.track = (m.track + d + TRACKS.length) % TRACKS.length;
-    if (!viewMode) { syncInputs(); save(); }
-    this.playing ? this.start() : this.sync();
-  },
-  sync() {
-    const lbl = this.playing ? '■ 停止' : '▶ 播放';
-    $('#playBtn').textContent = lbl; $('#playBtn2').textContent = this.playing ? '■ 音樂' : '▶ 音樂';
-    render(true);
+    default: return { back: '', front: '' };
   }
+}
+
+function selfie(seed, g, o = {}) {
+  const r = rng(seed);
+  const skin = pick(r, ['#f9dcc4', '#f3cba8', '#eab98f', '#fbe3d0']);
+  const bg = o.bg || pick(r, ['#d9d4cc', '#c9d6e3', '#e8dcc8', '#d4c4b0', '#bfc9b8', '#ece6f5', '#f2d7d9']);
+  const shirt = pick(r, ['#222', '#f4f4f4', '#c33', '#335', '#7a8', '#e9a', '#666', '#f5c400']);
+  const style = o.hair ?? pick(r, g === 'm' ? HAIR_M : HAIR_F);
+  const hc = o.color || pick(r, g === 'm' ? HAIR_COLORS.slice(0, 3) : HAIR_COLORS);
+  const glasses = o.glasses ?? r() < .25;
+  const blush = o.blush ?? g === 'f';
+  const tilt = o.tilt ?? (r() * 16 - 8).toFixed(1);
+  const mouth = pick(r, ['smile', 'pout', 'flat', 'smile']);
+  const big = g === 'f';
+  const h = hairParts(style, hc);
+  const eye = x => big
+    ? `<ellipse cx="${x}" cy="74" rx="4" ry="4.8" fill="#2a1a12"/><circle cx="${x + 1.4}" cy="72.4" r="1.4" fill="#fff"/><path d="M${x - 5} 69 Q${x} 66 ${x + 5} 69" stroke="#2a1a12" stroke-width="1.6" fill="none"/>`
+    : `<ellipse cx="${x}" cy="75" rx="2.8" ry="3.2" fill="#2a1a12"/><path d="M${x - 6} 67 L${x + 5} 66" stroke="${hc}" stroke-width="2.4"/>`;
+  const m = { smile: '<path d="M52 90 Q60 96 68 90" stroke="#a5523f" stroke-width="2" fill="none"/>',
+    pout: '<path d="M55 91 Q60 88 65 91 Q60 95 55 91Z" fill="#d9667a"/>',
+    flat: '<path d="M54 92 L66 91" stroke="#a5523f" stroke-width="2"/>' }[mouth];
+  const face = style === 'none' && o.blank
+    ? `<text x="60" y="88" text-anchor="middle" font-size="44" font-family="Verdana" font-weight="bold" fill="#bbb">?</text>`
+    : `${eye(48)}${eye(72)}<path d="M59 79 Q57 85 61 85" stroke="#c48a6a" stroke-width="1.5" fill="none"/>${m}` +
+      (blush ? '<ellipse cx="42" cy="84" rx="5" ry="3" fill="#ff8aa0" opacity=".45"/><ellipse cx="78" cy="84" rx="5" ry="3" fill="#ff8aa0" opacity=".45"/>' : '') +
+      (glasses ? '<rect x="38" y="67" width="18" height="14" rx="3" fill="none" stroke="#111" stroke-width="2.6"/><rect x="64" y="67" width="18" height="14" rx="3" fill="none" stroke="#111" stroke-width="2.6"/><path d="M56 73 L64 73" stroke="#111" stroke-width="2"/>' : '');
+  const stamp = o.stamp === false ? '' : `<text x="114" y="146" text-anchor="end" font-size="8" font-family="Verdana" font-weight="bold" fill="#ff8a00">'09 01 08</text>`;
+  return `<rect width="120" height="150" fill="${bg}"/><rect x="${o.blank ? 200 : 86}" y="0" width="34" height="150" fill="#fff" opacity=".18"/>
+<g transform="rotate(${tilt} 60 90)">${h.back}
+<path d="M8 160 Q12 116 60 112 Q108 116 112 160Z" fill="${o.blank ? '#fff' : shirt}" stroke="${o.blank ? '#333' : 'none'}" stroke-width="2"/>
+<rect x="51" y="96" width="18" height="20" fill="${skin}"/>
+<circle cx="32" cy="76" r="5.5" fill="${skin}"/><circle cx="88" cy="76" r="5.5" fill="${skin}"/>
+<ellipse cx="60" cy="72" rx="28" ry="32" fill="${o.blank ? '#fff' : skin}" stroke="${o.blank ? '#333' : 'none'}" stroke-width="3"/>
+${face}${h.front}</g>${stamp}`;
+}
+const svg = (inner, cls = '') => `<svg class="${cls}" viewBox="0 0 120 150" xmlns="http://www.w3.org/2000/svg">${inner}</svg>`;
+
+/* ================= 資料（全部虛構） ================= */
+const ALBUMS = {
+  m: [['kevin_0812', '今天髮型有抓好'], ['xX阿傑Xx', '45度角才是本體'], ['sky_boy520', '這張拍了87次'], ['dennis1988', '有人說我像偶像劇男主角'],
+      ['小胖不胖', '減肥前最後一張'], ['jason.lin', '畢旅帥照分享'], ['ah_wei', '新買的耳環很閃'], ['emo_kid', '瀏海擋住了我的悲傷'],
+      ['小傑仔', '我家的貓比較帥'], ['ray_0921', '日系男孩修煉中']],
+  f: [['cindy_520', '新買的放大片'], ['小麻吉', '哈囉～自拍時間'], ['candy.baby', '閨蜜大頭貼日'], ['yuki_0214', '減肥第三天（失敗）'],
+      ['草莓小公主', '今天是公主日♥'], ['vivi1990', '剪了新瀏海喜翻嗎'], ['momo_chan', '嘟嘴是基本禮貌'], ['肉圓妹', '彰化在地正妹'],
+      ['小葵花', '畢業典禮快樂'], ['nana_0707', '素顏不要笑我']]
 };
-function bgmGo() { $('#bgm').style.display = 'none'; Music.start(); }
+const GRAM = [['布丁不要走', '今天的熱門相簿怎麼都那麼帥啊～'], ['xinhui_520', '我的星座是為你量身訂做～～'], ['kevin_0812', '誰可以教我改網誌語法 QQ'],
+  ['小麻吉', '徵求一起拍大頭貼的好麻吉 ^^b'], ['emo_kid', '……今天的雨，好像在哭'], ['阿弟仔', '網咖包夜缺一！來的敲我']];
+const NEWS = [
+  ['【3C】千萬畫素相機時代來臨 網友：自拍終於看得到毛孔了', '2009-01-08 15:03', '各家廠牌紛紛推出高畫素輕薄機款，搭配翻轉螢幕，45 度角自拍族直呼「再也不用倒數三秒」。'],
+  ['【生活】寒假打工熱門排行 網咖店員再度奪冠', '2009-01-07 11:20', '調查指出學生最想做的寒假工讀依序為網咖店員、飲料店與補習班助教，原因是「可以一直上網」。'],
+  ['【流行】大頭貼機推出閃粉新框 假日排隊半小時', '2009-01-06 18:45', '西門町多家大頭貼店推出限定閃亮邊框，不少國高中生一次拍好幾組，回家立刻上傳到相簿。'],
+  ['【網路】網誌語法大流行 「隱藏捲軸」最熱門', '2009-01-05 09:12', '網友熱衷複製貼上 CSS 語法改造版面，其中透明捲軸、愛心游標與跑馬燈名列最受歡迎前三名。']
+];
+const EVENTS = ['寒假自拍大賽 得獎名單公佈', '網誌新版型票選開跑', '大頭寶製造機 新增 8 款髮型', '吾名高校第 3 堂：教你做跑馬燈', '揪團去墾丁看海 報名中'];
+const NOTICES = ['全新「好友管理」12/11 上線', '「贊助網誌」將於 1/8 上線', '密碼不外露，功能更安全', '請協助回報頁面緩慢問題'];
+const RANK = [['ming0921', '☆ 小明の秘密基地 ☆', 5201], ['cindy_520', '粉紅泡泡日記 ♥', 4877], ['emo_kid', '黑色的雨夜', 3990], ['阿弟仔', '包夜人生', 2754], ['小麻吉', '麻吉ㄉ碎碎念', 2210]];
+const CATS = ['女生', '帥哥', '攝影', '生活', '流行', '笑話', '影視', '星光'];
 
-/* ---------------- 編輯器 ---------------- */
-function showTab(name) {
-  $$('#tabs button').forEach(b => b.classList.toggle('on', b.dataset.tab === name));
-  $$('#icons button').forEach(b => b.classList.toggle('on', b.dataset.tab === name));
-  $$('.pane').forEach(p => p.classList.toggle('on', p.dataset.pane === name));
-}
+/* ================= 頁面 ================= */
+let gender = 'm', user = lsGet('mn-user', null), avatar = lsGet('mn-avatar', null);
+const votes = lsGet('mn-votes', {});
 
-function syncInputs() {
-  $$('[data-k]').forEach(el => {
-    const v = getK(S, el.dataset.k);
-    if (el.type === 'checkbox') el.checked = !!v; else if (el.type !== 'file' && el !== document.activeElement) el.value = v ?? '';
-  });
-  const p = S.posts[curPost];
-  $$('[data-p]').forEach(el => { el.disabled = !p; if (el !== document.activeElement) el.value = p ? (p[el.dataset.p] ?? '') : ''; });
-  $('#postList').innerHTML = S.posts.map((p, i) => `<div class="${i === curPost ? 'on' : ''}" data-i="${i}">${esc(p.title || '(無標題)')} <small>${esc(fmtDate(p.date).day.slice(0, 10))}</small></div>`).join('') || '<div>還沒有文章</div>';
-  $('#cmtList').innerHTML = S.comments.map((c, i) => `<div class="${i === curCmt ? 'on' : ''}" data-i="${i}"><b>${esc(c.name)}</b>：${esc(c.text)}</div>`).join('') || '<div>沒有留言</div>';
-  $('#themes').innerHTML = Object.entries(THEMES).map(([k, t]) => `<div class="theme${S.theme === k ? ' on' : ''}" data-theme="${k}"><i style="background:${t.sw}"></i>${t.name}</div>`).join('');
-  $('#trackList').innerHTML = TRACKS.map((t, i) => `<label class="chk"><input type="radio" name="trk" value="${i}"${!S.music.url && S.music.track === i ? ' checked' : ''}> ${esc(t.name)} <small style="color:#999">${t.bpm} BPM</small></label>`).join('');
-}
+function scrollTop0() { scrollTo({ top: 0, behavior: 'smooth' }); }
+function setStatus(t) { const el = $('#status'); el.textContent = t; el.classList.add('on'); clearTimeout(setStatus.t); setStatus.t = setTimeout(() => el.classList.remove('on'), 3000); }
 
-function bindEditor() {
-  $('#moodSel').innerHTML = $('#pMood').innerHTML = MOODS.map(m => `<option>${m[0]}</option>`).join('');
-  $$('[data-k]').forEach(el => el.addEventListener(el.type === 'checkbox' ? 'change' : 'input', () => {
-    setK(el.dataset.k, el.type === 'checkbox' ? el.checked : el.value);
-    changed();
-    if (el.dataset.k === 'music.url' && Music.playing) Music.start();
-  }));
-  $$('[data-p]').forEach(el => el.addEventListener('input', () => {
-    const p = S.posts[curPost]; if (!p) return;
-    p[el.dataset.p] = el.dataset.p === 'views' ? (parseInt(el.value, 10) || 0) : el.value;
-    changed();
-    if (el.dataset.p === 'title' || el.dataset.p === 'date') syncList();
-  }));
-  $('#postList').addEventListener('click', e => { const d = e.target.closest('[data-i]'); if (d) { curPost = +d.dataset.i; syncInputs(); } });
-  $('#cmtList').addEventListener('click', e => { const d = e.target.closest('[data-i]'); if (d) { curCmt = +d.dataset.i; syncInputs(); } });
-  $('#themes').addEventListener('click', e => { const d = e.target.closest('[data-theme]'); if (d) { S.theme = d.dataset.theme; syncInputs(); changed(); } });
-  $('#trackList').addEventListener('change', e => { S.music.track = +e.target.value; S.music.url = ''; syncInputs(); changed(); if (Music.playing) Music.start(); });
-  $('#tabs').addEventListener('click', e => { const b = e.target.closest('[data-tab]'); if (b) showTab(b.dataset.tab); });
-  $('#icons').addEventListener('click', e => { const b = e.target.closest('[data-tab]'); if (b) { if (viewMode) goHome(); showTab(b.dataset.tab); } });
-  $('#kao').innerHTML = KAOMOJI.map(k => `<button type="button">${esc(k)}</button>`).join('');
-  $('#kao').addEventListener('click', e => { if (e.target.tagName === 'BUTTON') insertAtCursor(e.target.textContent); });
-  $('#snips').innerHTML = SNIPPETS.map((s, i) => `<button class="btn sm" data-i="${i}">${s[0]}</button>`).join('');
-  $('#snips').addEventListener('click', e => {
-    const b = e.target.closest('[data-i]'); if (!b) return;
-    const [name, css] = SNIPPETS[+b.dataset.i];
-    S.css = (S.css ? S.css.replace(/\s*$/, '\n\n') : '') + `/* ${name} */\n${css}\n`;
-    syncInputs(); changed();
-  });
-  $('#avatarFile').addEventListener('change', e => {
-    const f = e.target.files[0]; if (!f) return;
-    const img = new Image();
-    img.onload = () => {
-      const c = document.createElement('canvas'); c.width = c.height = 96;
-      const s = Math.min(img.width, img.height);
-      c.getContext('2d').drawImage(img, (img.width - s) / 2, (img.height - s) / 2, s, s, 0, 0, 96, 96);
-      S.profile.avatar = c.toDataURL('image/jpeg', .72);
-      URL.revokeObjectURL(img.src); syncInputs(); changed();
-    };
-    img.src = URL.createObjectURL(f);
-  });
+let albumSeed = Date.now();
+function currentAlbums(reshuffle) {
+  if (reshuffle) albumSeed = Date.now();
+  return shuffle(ALBUMS[gender], rng(albumSeed + gender)).slice(0, 4);
 }
-function syncList() {
-  $$('#postList [data-i]').forEach((d, i) => { const p = S.posts[i]; d.innerHTML = `${esc(p.title || '(無標題)')} <small>${esc(fmtDate(p.date).day.slice(0, 10))}</small>`; });
+function renderAlbums(reshuffle) {
+  $('#albums').innerHTML = currentAlbums(reshuffle).map(([u, c]) =>
+    `<div class="alb" data-u="${esc(u)}" data-c="${esc(c)}">${svg(selfie(u, gender), 'ph-img')}<div class="u">${esc(u)}</div><div class="c">${esc(c)}</div></div>`).join('');
+  $('#joinLink').textContent = gender === 'm' ? '是男生就快來報名' : '正妹快來報名';
+  $$('.hot-h button').forEach(b => b.classList.toggle('on', b.dataset.g === gender));
 }
+function openAlbums() { $('.hot-h').scrollIntoView({ behavior: 'smooth', block: 'start' }); }
 
-function addPost() {
-  const d = new Date();
-  S.posts.unshift({ title: '新文章', date: `2005-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`, mood: '開心', views: 0, body: '今天…\n' });
-  curPost = 0; syncInputs(); changed(); $('#pBody').focus();
+let gIdx = 0;
+function tickGram() {
+  const all = GRAM.concat(lsGet('mn-gram', []));
+  const [n, t] = all[gIdx++ % all.length];
+  $('#gram').innerHTML = `<em>${esc(n)}</em> 要對大家說：${esc(t)}`;
 }
-function delPost() {
-  if (!S.posts[curPost] || !confirm(`確定要刪除「${S.posts[curPost].title}」？`)) return;
-  S.posts.splice(curPost, 1); curPost = Math.max(0, curPost - 1); syncInputs(); changed();
-}
-function movePost(d) {
-  const j = curPost + d; if (j < 0 || j >= S.posts.length) return;
-  [S.posts[curPost], S.posts[j]] = [S.posts[j], S.posts[curPost]]; curPost = j; syncInputs(); changed();
-}
-function insertAtCursor(txt) {
-  const ta = $('#pBody'); if (ta.disabled) return;
-  const a = ta.selectionStart, b = ta.selectionEnd;
-  ta.setRangeText(txt, a, b, 'end'); ta.focus(); ta.dispatchEvent(new Event('input'));
-}
-function wrapSel(open, close) {
-  const unesc = s => new DOMParser().parseFromString(s, 'text/html').documentElement.textContent;
-  const ta = $('#pBody'); if (ta.disabled) return;
-  const a = ta.selectionStart, b = ta.selectionEnd, sel = ta.value.slice(a, b) || '文字';
-  ta.setRangeText(unesc(open) + sel + unesc(close), a, b, 'select'); ta.focus(); ta.dispatchEvent(new Event('input'));
-}
+let nIdx = 0;
+function showNews() { const [h, d, p] = NEWS[nIdx % NEWS.length]; $('#newsHl').innerHTML = `${esc(h)} <small>(${d})</small>`; $('#newsP').textContent = p; }
+function nextNews() { nIdx++; showNews(); }
 
-const MARS = [['什麼', '蝦米'], ['這樣', '醬'], ['不要', '表'], ['喜歡', '喜翻'], ['謝謝', '3Q'], ['怎麼', '腫麼'], ['沒有', '每有'], ['覺得', '決得'], ['可愛', '口愛'], ['一樣', '依樣'], ['真的', '真ㄉ'], ['知道', '芝道'],
-  ['的', 'ㄉ'], ['了', 'ㄌ'], ['是', '4'], ['很', '粉'], ['你', '尼'], ['我', '偶'], ['呢', 'ㄋ'], ['啦', 'ㄌ'], ['嗎', 'ㄇ'], ['吧', 'ㄅ'], ['啊', 'ㄚ'], ['喔', 'ㄛ'], ['好', 'ㄏㄠˇ'], ['他', 'ㄊ'], ['她', 'ㄊ'], ['在', '在'], ['就', 'ㄐㄡˋ']];
-function toMars() {
-  const p = S.posts[curPost]; if (!p) return;
-  const conv = s => MARS.reduce((t, [a, b]) => t.split(a).join(b), s);
-  p.body = String(p.body).split(/(<[^>]+>)/).map(seg => seg.startsWith('<') ? seg : conv(seg)).join('');
-  syncInputs(); changed(); setStatus('已轉換成火星文 ㄎㄎ');
+function iconSvg(k) {
+  return {
+    album: '<svg viewBox="0 0 42 38"><rect x="3" y="4" width="36" height="29" rx="3" fill="#4a90c8"/><rect x="7" y="8" width="28" height="21" fill="#dff2ff"/><path d="M8 28l9-10 7 7 5-5 6 8z" fill="#5aa34a"/></svg>',
+    blog: '<svg viewBox="0 0 42 38"><rect x="8" y="3" width="24" height="31" rx="2" fill="#fff" stroke="#4a90c8" stroke-width="2.5"/><path d="M13 11h14M13 17h14M13 23h9" stroke="#4a90c8" stroke-width="2.5"/></svg>',
+    av: '<svg viewBox="0 0 42 38"><path d="M6 8h22l6 6v18H6z" fill="#9b6ad8"/><path d="M16 14v12l10-6z" fill="#fff"/></svg>',
+    friend: '<svg viewBox="0 0 42 38"><circle cx="15" cy="12" r="6" fill="#5b8bd0"/><path d="M4 35c0-9 5-14 11-14s11 5 11 14z" fill="#5b8bd0"/><circle cx="29" cy="14" r="5" fill="#f08a3a"/><path d="M21 35c0-8 4-11 8-11s10 3 10 11z" fill="#f08a3a"/></svg>',
+    chat: '<svg viewBox="0 0 42 38"><circle cx="16" cy="13" r="8" fill="#ffd2a8"/><rect x="20" y="16" width="18" height="12" rx="4" fill="#5aa0e0"/><path d="M8 35c0-8 4-12 8-12s8 4 8 12z" fill="#2d6fb8"/></svg>',
+    msg: '<svg viewBox="0 0 42 38"><rect x="4" y="8" width="34" height="22" fill="#fff" stroke="#e08a2a" stroke-width="2.5"/><path d="M4 8l17 13 17-13" stroke="#e08a2a" stroke-width="2.5" fill="none"/></svg>',
+    group: '<svg viewBox="0 0 42 38"><path d="M6 14l18-8v26L6 24z" fill="#666"/><rect x="24" y="12" width="8" height="14" fill="#e33"/><path d="M34 10l6-4M34 19h6M34 28l6 4" stroke="#e8b800" stroke-width="2.5"/></svg>'
+  }[k];
 }
-
-function addCmt() {
-  const name = $('#cName').value.trim() || '路過的', text = $('#cText').value.trim();
-  if (!text) return $('#cText').focus();
-  const d = new Date();
-  S.comments.push({ name, text, date: `2005-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}` });
-  $('#cText').value = ''; curCmt = -1; syncInputs(); changed();
-}
-function delCmt() { if (curCmt < 0 || !S.comments[curCmt]) return setStatus('先點一則留言再刪除'); S.comments.splice(curCmt, 1); curCmt = -1; syncInputs(); changed(); }
-function copyThemeToCss() {
-  S.css = `/* 由「${THEMES[S.theme].name}」複製 */\n${THEMES[S.theme].css}\n\n${S.css}`;
-  syncInputs(); changed();
-}
-
-/* ---------------- 分享 / 匯出 ---------------- */
-function shareUrl(st = S) {
-  return location.href.split('#')[0] + '#data=' + LZString.compressToEncodedURIComponent(JSON.stringify(st));
-}
-function makeShare() {
-  if (typeof LZString === 'undefined') { $('#shareInfo').textContent = '壓縮套件沒載入成功，請確認網路連線後重新整理。'; return ''; }
-  const url = shareUrl();
-  $('#shareOut').value = url;
-  $('#shareInfo').textContent = `網址長度 ${url.length.toLocaleString()} 字元` + (url.length > 8000 ? '：有點長！上傳的大頭貼很佔空間，改用圖片網址會短很多。' : '，可以放心貼給朋友 ^^b');
-  return url;
-}
-async function copyShare() {
-  const url = $('#shareOut').value || makeShare(); if (!url) return;
-  try { await navigator.clipboard.writeText(url); } catch { $('#shareOut').select(); document.execCommand('copy'); }
-  setStatus('已複製分享網址！快去貼在即時通暱稱上 XD');
-}
-function openShare() { const u = makeShare(); if (u) window.open(u, '_blank', 'noopener'); }
-
-async function exportPng() {
-  const info = $('#pngInfo'); info.textContent = '拍照中……請稍候';
-  try {
-    const w = frame.contentWindow;
-    if (!w.htmlToImage) await new Promise((ok, no) => { const s = fdoc.createElement('script'); s.src = HTML2IMG; s.onload = ok; s.onerror = no; fdoc.head.appendChild(s); });
-    const node = fdoc.documentElement;
-    const url = await w.htmlToImage.toPng(node, {
-      width: node.scrollWidth, height: node.scrollHeight, pixelRatio: 1,
-      backgroundColor: getComputedStyle(fdoc.body).backgroundColor,
-      filter: n => !(n.classList && n.classList.contains('sparkle'))
-    });
-    const a = document.createElement('a'); a.href = url; a.download = `myname-${cur().user}.png`; a.click();
-    info.textContent = '完成！檔案已下載。';
-  } catch (err) {
-    info.textContent = '截圖失敗：可能是外部圖片不允許跨網域讀取，或套件載入失敗。';
-    console.error(err);
+function renderMember() {
+  const ic = (k, label, act) => `<a class="ic" onclick="${act}">${iconSvg(k)}<span>${label}</span></a>`;
+  if (user) {
+    $('#hiTxt').innerHTML = `Hi, ${esc(user)}！ <b>${pick(Math.random, ['今天也很有型喔', '你的網誌有新留言', '小編推薦你的相簿'])}</b>`;
+    $('#logout').style.display = '';
+    $('#meLinks').style.display = '';
+    const me = svg(avatar ? selfie(user, avatar.g, Object.assign({ stamp: false, tilt: 0 }, avatar)) : selfie(user, 'm', { stamp: false }));
+    $('#member').innerHTML = `<div class="me">${me}</div>` + ic('album', '相簿', 'openAlbums()') + ic('blog', '網誌', "location.href='blog.html'") +
+      ic('av', '影音', 'toggleMusic(true)') + ic('msg', '留言', 'leaveMsg()') + ic('friend', '好友', 'openPK()');
+    $('#slogan').textContent = '';
+  } else {
+    $('#hiTxt').innerHTML = 'Hi, 您還沒登入喔';
+    $('#logout').style.display = 'none';
+    $('#meLinks').style.display = 'none';
+    $('#member').innerHTML = `<div class="mbtn" onclick="login()" style="grid-column:span 1">會員登入</div>` + ic('album', '相簿', 'openAlbums()') + ic('blog', '網誌', "location.href='blog.html'") +
+      `<div class="mbtn" onclick="login(true)">免費註冊</div>` + ic('friend', '好友', 'openPK()') + ic('group', '揪團', 'leaveMsg()');
+    $('#slogan').textContent = '揪啥都快，揪誰都來，揪什麼都不奇怪';
   }
 }
 
-function resetAll() {
-  if (!confirm('確定要把整個小站重設成預設內容？（文章、語法都會消失）')) return;
-  Music.stop(true); S = normalize(null); curPost = 0; curCmt = -1; syncInputs(); changed();
-}
-function adoptShared() {
-  if (!confirm('要用這個小站的內容「覆蓋」你自己的後台嗎？')) return;
-  S = normalize(clone(sharedState)); lsSet(LS_KEY, JSON.stringify(S)); goHome();
-}
-function goHome() { if (location.hash) location.hash = ''; else if (viewMode) boot(); }
+/* ================= 對話框 ================= */
+function dlg(title, html) { $('#dlgT').textContent = title; $('#dlgC').innerHTML = html; $('#dlgBg').classList.add('on'); const f = $('#dlgC input[type=text]'); if (f) f.focus(); }
+function closeDlg() { $('#dlgBg').classList.remove('on'); }
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDlg(); });
 
-/* ---------------- 外框 ---------------- */
-function setStatus(t) { $('#status').textContent = t; clearTimeout(setStatus.t); setStatus.t = setTimeout(() => $('#status').textContent = '完成', 4000); }
-function refreshChrome() {
-  const st = cur();
-  const url = `http://www.myname.cc/blog/${st.user}`;
-  $('#addr').textContent = url; $('#stageUrl').textContent = url;
-  $('#winTitle').textContent = `${st.title} - 吾名小站 - Microsoft Internet Explorer`;
-  $('#taskTitle').textContent = st.title; $('#hiUser').textContent = S.user; $('#vbUser').textContent = st.user;
-  document.title = viewMode ? `${st.title} - 吾名小站` : '吾名小站 MyName Station — 2005 懷舊網誌模擬器';
+function login(reg) {
+  dlg(reg ? '免費註冊 - 吾名小站' : '會員登入 - 吾名小站', `
+    <p style="margin-top:0">${reg ? '取一個帥氣的帳號吧！' : '輸入你的吾名帳號：'}</p>
+    <form onsubmit="event.preventDefault();doLogin()">
+      <div class="row"><label>帳號</label><input type="text" id="lgUser" maxlength="16" placeholder="例如 ming0921" value="${esc(lsGet('mn-last', ''))}"></div>
+      <p style="color:#888;font-size:11px">※ 這是懷舊模擬器，不需要也不要輸入任何密碼。帳號只存在你自己的瀏覽器裡。</p>
+      <div class="dlg-f"><button class="btn">確定</button><button type="button" class="btn" onclick="closeDlg()">取消</button></div>
+    </form>`);
 }
-function tickClock() { const d = new Date(), h = d.getHours(); $('#clock').textContent = `${h < 12 ? '上午' : '下午'} ${pad(h % 12 || 12)}:${pad(d.getMinutes())}`; }
-let gIdx = 0;
-function tickGramo() {
-  const src = cur().comments.length ? cur().comments : [{ name: 'MyNameFAQ', text: '記得來看新公告^^b' }];
-  const c = src[gIdx++ % src.length];
-  $('#gramo').innerHTML = `<em>${esc(c.name)}</em> 要對大家說：${esc(c.text)}`;
+function doLogin() {
+  const v = $('#lgUser').value.trim();
+  if (!v) return $('#lgUser').focus();
+  user = v; lsSet('mn-user', v); lsSet('mn-last', v); closeDlg(); renderMember(); setStatus(`歡迎回來，${v}！`);
 }
+function logout() { user = null; lsSet('mn-user', null); renderMember(); setStatus('已登出，掰掰～'); }
+function vip() { dlg('加入VIP', '<p style="margin-top:0">VIP 專屬功能：</p><ul><li>相簿空間無限大</li><li>網誌可以放 10 首背景音樂</li><li>名字旁邊有閃亮亮皇冠 👑</li></ul><p>……可惜這是模擬器，人人都是 VIP ^^b</p><div class="dlg-f"><button class="btn" onclick="closeDlg()">確定</button></div>'); }
 
-function boot() {
-  Music.stop(true);
-  sharedState = readHash();
-  viewMode = !!sharedState;
-  document.body.classList.toggle('view', viewMode);
-  S = S || loadLocal();
-  syncInputs(); refreshChrome(); tickGramo();
-  $('#bgm').style.display = viewMode && sharedState.music.autoplay ? 'block' : 'none';
-  render(true);
-  if (location.hash && !viewMode) setStatus('分享網址壞掉了 QQ 已開啟你自己的小站');
+function leaveMsg() {
+  dlg('留聲機 - 我要留言', `
+    <form onsubmit="event.preventDefault();doMsg()">
+      <div class="row"><label>暱稱</label><input type="text" id="mName" maxlength="16" value="${esc(user || '路過的')}"></div>
+      <div class="row"><label>想說</label><input type="text" id="mText" maxlength="40" placeholder="要對大家說什麼呢？"></div>
+      <div class="dlg-f"><button class="btn">送出</button><button type="button" class="btn" onclick="closeDlg()">取消</button></div>
+    </form>`);
+  $('#mText').focus();
+}
+function doMsg() {
+  const n = $('#mName').value.trim() || '路過的', t = $('#mText').value.trim();
+  if (!t) return $('#mText').focus();
+  const mine = lsGet('mn-gram', []); mine.push([n, t]); lsSet('mn-gram', mine.slice(-20));
+  gIdx = GRAM.length + mine.length - 1; tickGram(); closeDlg(); setStatus('留言已送上留聲機！');
 }
 
-hits = (parseInt(lsGet('myname-hits'), 10) || 0) + 1; lsSet('myname-hits', hits);
-bindEditor();
-initFrame();
-boot();
-tickClock(); setInterval(tickClock, 15000);
-setInterval(tickGramo, 5000);
-window.addEventListener('hashchange', boot);
+function openAlbum(u, c) {
+  const key = 'a:' + u, base = 300 + Math.floor(rng(u)() * 4000);
+  const draw = () => `<div class="lb">${svg(selfie(u, gender))}<div><h4>${esc(c)}</h4><div>相簿主人：<a>${esc(u)}</a></div>
+    <div class="stat">相片 ${12 + Math.floor(rng(u + 1)() * 60)} 張　|　人氣 ${(base + (votes[key] || 0) * 13).toLocaleString()}　|　推薦 ${votes[key] || 0}</div>
+    <p>${esc(pick(rng(u + 2), ['這是我最滿意的一張！大家覺得呢？', '拍了一整個下午……手好痠 XD', '歡迎留言 不要只看喔^^', '沒修圖！是真的！（心虛）']))}</p>
+    <div class="dlg-f" style="justify-content:flex-start"><button class="btn" id="voteBtn">推薦這本相簿 ♥</button><button class="btn" onclick="closeDlg()">關閉</button></div></div></div>`;
+  dlg(`${u} 的相簿 - 吾名小站`, draw());
+  $('#dlgC').onclick = e => { if (e.target.id === 'voteBtn') { votes[key] = (votes[key] || 0) + 1; lsSet('mn-votes', votes); $('#dlgC').innerHTML = draw(); setStatus('推薦成功！'); } };
+}
+
+function openPK() {
+  const g = gender, pool = shuffle(ALBUMS[g]).slice(0, 2);
+  const score = u => votes['pk:' + u] || 0;
+  dlg(`${g === 'm' ? '帥哥' : '正妹'} PK 擂台 - 只有最好，由你決定`, `
+    <div class="pk">${pool.map(([u, c], i) => `${i ? '<div class="vs">VS</div>' : ''}<div class="side" data-u="${esc(u)}">${svg(selfie(u, g))}<div>${esc(u)}</div><div class="score">${score(u)} 票</div></div>`).join('')}</div>
+    <p style="text-align:center;color:#888;margin-bottom:0">點你覺得比較${g === 'm' ? '帥' : '正'}的那一位！</p>`);
+  $('#dlgC').onclick = e => {
+    const s = e.target.closest('.side'); if (!s) return;
+    votes['pk:' + s.dataset.u] = score(s.dataset.u) + 1; lsSet('mn-votes', votes);
+    setStatus(`你投給了 ${s.dataset.u}！`); openPK();
+  };
+}
+function joinAlbum() { user ? setStatus('報名成功！小編會盡快審核你的相簿 ^^b') : login(true); }
+
+function doSearch(e) {
+  e.preventDefault();
+  const q = $('#q').value.trim(), box = $('#results');
+  if (!q) { box.classList.remove('on'); return; }
+  const hits = [...ALBUMS.m, ...ALBUMS.f].filter(([u, c]) => (u + c).toLowerCase().includes(q.toLowerCase()))
+    .concat(NEWS.filter(n => n[0].includes(q)).map(n => ['新聞', n[0]]));
+  box.innerHTML = hits.length
+    ? `找到 ${hits.length} 筆「${esc(q)}」：<br>` + hits.slice(0, 8).map(([u, c]) => `・<a>${esc(u)}</a> ${esc(c)}`).join('<br>')
+    : `找不到「${esc(q)}」相關的${esc($('#qType').value.replace('搜尋', ''))}，換個關鍵字試試看 ^^"`;
+  box.classList.add('on');
+}
+
+/* ================= 大頭寶製造機 ================= */
+const mk = Object.assign({ g: 'm', hair: 'none', color: HAIR_COLORS[0], glasses: false, blush: false }, avatar || {});
+function mkRender() {
+  $('#mkFace').innerHTML = selfie('maker', mk.g, { hair: mk.hair, color: mk.color, glasses: mk.glasses, blush: mk.blush, tilt: 0, stamp: false, bg: '#eaf6ff', blank: mk.hair === 'none' });
+  $('#mkHair').innerHTML = [...HAIR_M, ...HAIR_F].map(h =>
+    `<button class="${mk.hair === h ? 'on' : ''}" data-h="${h}" title="${h}"><svg viewBox="16 14 88 80">${(p => p.back + p.front)(hairParts(h, mk.color))}</svg></button>`).join('');
+  $('#mkColor').innerHTML = HAIR_COLORS.map(c => `<button class="sw${mk.color === c ? ' on' : ''}" data-c="${c}" style="background:${c}"></button>`).join('');
+  $('#mkGlasses').checked = mk.glasses; $('#mkBlush').checked = mk.blush;
+}
+function mkRandom() {
+  const all = [...HAIR_M, ...HAIR_F];
+  mk.hair = all[Math.random() * all.length | 0]; mk.g = HAIR_F.includes(mk.hair) ? 'f' : 'm';
+  mk.color = HAIR_COLORS[Math.random() * 5 | 0]; mk.glasses = Math.random() < .3; mk.blush = Math.random() < .5; mkRender();
+}
+function mkSave() {
+  if (mk.hair === 'none') return setStatus('先幫大頭寶挑個髮型吧！');
+  avatar = { g: mk.g, hair: mk.hair, color: mk.color, glasses: mk.glasses, blush: mk.blush }; lsSet('mn-avatar', avatar);
+  if (!user) { login(true); setStatus('大頭寶已存好，登入後就會出現在右上角！'); } else { renderMember(); setStatus('大頭寶訂作完成！'); scrollTop0(); }
+}
+function scrollToMaker() { $('#maker').scrollIntoView({ behavior: 'smooth' }); }
+
+/* ================= 8-bit 背景音樂 ================= */
+const TUNE = { bpm: 128,
+  lead: 'E5 G5 C6 G5 A5 - G5 - E5 G5 A5 G5 E5 - D5 - C5 E5 G5 E5 F5 - E5 - D5 E5 F5 D5 C5 - - -',
+  bass: 'C3 - G3 - A2 - E3 - F2 - C3 - G2 - G3 - C3 - G3 - F2 - C3 - G2 - B2 - C3 - - -' };
+function noteFreq(n) { const m = /^([A-G])(#?)(\d)$/.exec(n); return m ? 440 * 2 ** (((+m[3] + 1) * 12 + { C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11 }[m[1]] + (m[2] ? 1 : 0) - 69) / 12) : 0; }
+function parseSeq(s) { const t = s.split(' '), ev = []; t.forEach((x, i) => { if (x !== '-') { let l = 1; while (t[i + l] === '-') l++; ev.push({ at: i, f: noteFreq(x), l }); } }); return { ev, n: t.length }; }
+const Music = { ctx: null, timer: null, playing: false,
+  start() {
+    if (this.playing) return;
+    this.ctx ||= new (window.AudioContext || window.webkitAudioContext)();
+    this.ctx.resume();
+    const out = this.ctx.createGain(); out.gain.value = .1; out.connect(this.ctx.destination); this.out = out;
+    const lead = parseSeq(TUNE.lead), bass = parseSeq(TUNE.bass), d = 60 / TUNE.bpm / 2;
+    let step = 0, next = this.ctx.currentTime + .05;
+    const blip = (f, at, l, w, v) => { const o = this.ctx.createOscillator(), g = this.ctx.createGain(); o.type = w; o.frequency.value = f; g.gain.setValueAtTime(v, at); g.gain.exponentialRampToValueAtTime(.001, at + l * d * .95); o.connect(g); g.connect(out); o.start(at); o.stop(at + l * d); };
+    this.timer = setInterval(() => {
+      while (next < this.ctx.currentTime + .2) {
+        for (const e of lead.ev) if (e.at === step % lead.n) blip(e.f, next, e.l, 'square', .5);
+        for (const e of bass.ev) if (e.at === step % bass.n) blip(e.f, next, e.l, 'triangle', .7);
+        step++; next += d;
+      }
+    }, 50);
+    this.playing = true; setStatus('♪ 正在播放：放學後的電腦教室');
+  },
+  stop() { clearInterval(this.timer); if (this.out) this.out.disconnect(); this.playing = false; }
+};
+function toggleMusic(force) {
+  const on = force === true ? !Music.playing : $('#bgmOn').checked;
+  on ? Music.start() : Music.stop();
+  $('#bgmOn').checked = on; $('#bgmOff').checked = !on; lsSet('mn-bgm', on);
+}
+
+
+/* ================= 啟動 ================= */
+$('#cats').innerHTML = CATS.map(c => `<a>${c}</a>`).join('');
+$('#cats').onclick = e => { if (e.target.tagName === 'A') { gender = ['女生', '流行'].includes(e.target.textContent) ? 'f' : 'm'; renderAlbums(true); openAlbums(); } };
+$('#events').innerHTML = EVENTS.map(e => `<li><a>${esc(e)}</a></li>`).join('');
+$('#notice').innerHTML = NOTICES.map(n => `<li>${esc(n)}</li>`).join('') + '<li class="m"><a>更多吾名站方公告</a></li>';
+$('#rank').innerHTML = RANK.map(([u, t, n], i) => `<li><i>${i + 1}</i><a href="blog.html">${esc(t)}</a><span>${n.toLocaleString()}</span></li>`).join('');
+$$('.hot-h button').forEach(b => b.onclick = () => { gender = b.dataset.g; renderAlbums(true); });
+$('#albums').onclick = e => { const a = e.target.closest('.alb'); if (a) openAlbum(a.dataset.u, a.dataset.c); };
+$('#mkHair').onclick = e => { const b = e.target.closest('[data-h]'); if (b) { mk.hair = b.dataset.h; mk.g = HAIR_F.includes(mk.hair) ? 'f' : 'm'; mkRender(); } };
+$('#mkColor').onclick = e => { const b = e.target.closest('[data-c]'); if (b) { mk.color = b.dataset.c; mkRender(); } };
+$('#mkGlasses').onchange = e => { mk.glasses = e.target.checked; mkRender(); };
+$('#mkBlush').onchange = e => { mk.blush = e.target.checked; mkRender(); };
+$('#bgmOn').onchange = $('#bgmOff').onchange = () => toggleMusic();
+
+const wantBgm = lsGet('mn-bgm', true);
+$('#bgmOn').checked = wantBgm; $('#bgmOff').checked = !wantBgm;
+// 當年的「自動播放」：瀏覽器規定要先互動一下，所以等第一次點擊就開始放
+if (wantBgm) document.addEventListener('pointerdown', function first(e) {
+  document.removeEventListener('pointerdown', first);
+  if ($('#bgmOn').checked && !e.target.closest('.bgmsw')) Music.start();
+});
+
+renderAlbums(); renderMember(); mkRender(); tickGram(); showNews();
+setInterval(tickGram, 5000);
+setInterval(() => { nIdx++; showNews(); }, 9000);
 </script>
 </body>
 </html>

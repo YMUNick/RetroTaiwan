@@ -1,0 +1,933 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>吾名小站 MyName Station</title>
+<meta name="description" content="2005 懷舊網誌模擬器：寫網誌、貼 CSS 語法、改版型，一鍵產生分享網址。">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.5.0/lz-string.min.js"></script>
+<style>
+:root{
+  --luna1:#0a5fd8; --luna2:#3d95ff; --luna3:#0846b0;
+  --xp:#ece9d8; --xpline:#aca899;
+  --blue:#1a6fb3; --sky:#dff0fb; --green:#6fb636; --green2:#8fd14f;
+  --ink:#333; --mute:#888;
+  --old: 'PMingLiU','新細明體','MingLiU','細明體',monospace,serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{
+  background:#3a6ea5; color:var(--ink);
+  font:12px/1.5 var(--old);
+  -webkit-font-smoothing:none; -moz-osx-font-smoothing:auto; font-smooth:never;
+}
+button,input,select,textarea{font:12px/1.4 var(--old);color:#000}
+#ie{display:flex;flex-direction:column;height:100vh;background:var(--xp)}
+
+/* ---------- IE chrome ---------- */
+.titlebar{display:flex;align-items:center;gap:6px;height:28px;padding:0 4px 0 8px;color:#fff;font-weight:bold;
+  background:linear-gradient(#3a8cf8,var(--luna1) 12%,#0855dd 50%,var(--luna3));border-radius:7px 7px 0 0;flex:none}
+.titlebar .t{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:1px 1px 0 #0a2a6a;font-size:13px}
+.tb-btn{width:21px;height:21px;border:1px solid #fff;border-radius:3px;background:linear-gradient(#5aa0ff,#1f62e0);color:#fff;
+  font:bold 11px/18px Tahoma,sans-serif;text-align:center;cursor:default}
+.tb-btn.x{background:linear-gradient(#e88a6a,#c6401c)}
+.menubar{display:flex;gap:2px;padding:2px 4px;border-bottom:1px solid #fff;flex:none}
+.menubar span{padding:0 6px;cursor:default}
+.menubar span:hover{background:#316ac5;color:#fff}
+.toolbar{display:flex;align-items:center;gap:4px;padding:3px 6px;border-top:1px solid var(--xpline);border-bottom:1px solid var(--xpline);flex:none;flex-wrap:wrap}
+.tool{display:inline-flex;align-items:center;gap:3px;padding:1px 5px;border:1px solid transparent;border-radius:3px;cursor:pointer;background:none}
+.tool:hover{border-color:#bbb;background:#fff}
+.tool i{display:inline-block;width:18px;height:18px;border-radius:50%;font:bold 12px/18px Tahoma,sans-serif;text-align:center;color:#fff;font-style:normal}
+.addr{display:flex;align-items:center;gap:4px;padding:3px 6px;flex:none;border-bottom:1px solid var(--xpline)}
+.addr label{color:#555}
+.addr .url{flex:1;min-width:0;background:#fff;border:1px solid #7f9db9;padding:1px 4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.addr .go{padding:0 6px;border:1px solid transparent}
+.statusbar{display:flex;gap:6px;padding:2px 6px;border-top:1px solid var(--xpline);flex:none}
+.statusbar span{border:1px inset #fff;padding:0 6px}
+.statusbar span:first-child{flex:1}
+.taskbar{display:flex;align-items:center;height:30px;background:linear-gradient(#3168d5,#245edb 10%,#1941a5);flex:none}
+.start{height:30px;padding:0 18px 0 10px;color:#fff;font:italic bold 15px/30px 'Trebuchet MS',sans-serif;border-radius:0 12px 12px 0;
+  background:linear-gradient(#5eac56,#3c9a2f 40%,#2f7d24);text-shadow:1px 1px 1px #000;cursor:pointer;border:0}
+.task{margin-left:6px;height:22px;padding:0 10px;color:#fff;background:#3c81f3;border:1px solid #1c50c0;border-radius:3px;line-height:20px;white-space:nowrap;max-width:180px;overflow:hidden;text-overflow:ellipsis}
+.task.on{background:#1e52b7;box-shadow:inset 1px 1px 2px #0a2a6a}
+.tray{margin-left:auto;height:30px;padding:0 12px;color:#fff;line-height:30px;background:linear-gradient(#1290e8,#0f78d5);border-left:1px solid #0b4fb0;white-space:nowrap}
+
+/* ---------- portal ---------- */
+.page{flex:1;min-height:0;overflow:auto;background:#fff}
+.portal{max-width:1180px;margin:0 auto;padding:0 10px}
+.ph{position:relative;display:flex;align-items:flex-end;gap:12px;height:96px;overflow:hidden;border-bottom:3px solid #d5e8f5}
+.ph:before{content:"";position:absolute;left:-60px;top:-150px;width:520px;height:300px;border-radius:50%;
+  background:radial-gradient(closest-side,transparent 70%,#ff8a8a 71% 74%,#ffc46a 75% 78%,#fff27a 79% 82%,#8fe07a 83% 86%,#7ac6ff 87% 90%,#b79bff 91% 94%,transparent 95%);opacity:.75}
+.logo{position:relative;font:bold 40px/1 var(--old);color:var(--green);letter-spacing:2px;padding:0 0 12px 16px;white-space:nowrap;
+  text-shadow:-2px -2px 0 #fff,2px -2px 0 #fff,-2px 2px 0 #fff,2px 2px 0 #fff,3px 4px 0 #b8d8a0}
+.logo small{display:block;font:bold 10px/1 Verdana,sans-serif;color:var(--blue);letter-spacing:1px;margin-top:4px;text-shadow:none}
+.icons{position:relative;display:flex;gap:4px;padding-bottom:6px}
+.icons button{width:62px;border:0;background:none;cursor:pointer;color:#666;padding:2px 0;border-radius:4px}
+.icons button:hover,.icons button.on{background:#eef7ff;color:var(--blue)}
+.icons svg{display:block;margin:0 auto 2px;width:38px;height:34px}
+.ph-r{position:relative;margin-left:auto;align-self:stretch;display:flex;flex-direction:column;justify-content:space-between;align-items:flex-end;padding:6px 0}
+.ph-r .links a{color:#333;margin-left:10px;text-decoration:none}
+.ph-r .hi b{color:#e0007a}
+.cats{display:flex}
+.cats a{padding:2px 8px;color:var(--blue);border-left:1px solid #cde;text-decoration:none;font-weight:bold}
+.cats a:first-child{border:0}
+.gramophone{display:flex;align-items:center;gap:8px;margin:8px 0;border:2px solid #b5d88f;background:#fbfff5;height:26px}
+.gramophone b{background:#6b8e3a;color:#fff;height:100%;padding:0 10px;line-height:22px;white-space:nowrap}
+.gramophone .msg{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gramophone .msg em{color:var(--blue);font-style:normal}
+.gramophone a{color:var(--blue);padding-right:8px;white-space:nowrap;cursor:pointer;text-decoration:underline}
+
+/* ---------- workspace ---------- */
+.ws{display:grid;grid-template-columns:380px minmax(0,1fr);gap:12px;padding-bottom:12px}
+.panel{border:1px solid #9cc7e6;min-width:0}
+.tabs{display:flex;flex-wrap:wrap;background:#eef5fb;border-bottom:3px solid var(--blue)}
+.tabs button{flex:1 1 auto;border:1px solid #cde;border-bottom:0;background:linear-gradient(#fff,#e6edf3);color:#777;padding:4px 6px;cursor:pointer;margin:3px 1px 0;border-radius:3px 3px 0 0}
+.tabs button.on{background:var(--blue);color:#fff;font-weight:bold;border-color:var(--blue)}
+.pane{display:none;padding:10px}
+.pane.on{display:block}
+.pane h3{margin:10px 0 6px;font-size:12px;color:var(--blue);border-left:4px solid var(--green);padding-left:6px}
+.pane h3:first-child{margin-top:0}
+.row{display:flex;align-items:center;gap:6px;margin-bottom:6px}
+.row>label{width:72px;flex:none;color:#555;text-align:right}
+.row>input,.row>select{flex:1;min-width:0}
+input[type=text],input[type=url],input[type=datetime-local],select,textarea{border:1px solid #7f9db9;padding:2px 3px;background:#fff}
+textarea{width:100%;resize:vertical;display:block}
+textarea.code{font:12px/1.5 'MingLiU','細明體',monospace;background:#fffef0;min-height:260px;white-space:pre;tab-size:2}
+.btn{border:1px solid #003c74;border-radius:3px;background:linear-gradient(#fff,#ecebe6 85%,#d6d0c5);padding:2px 10px;cursor:pointer;color:#000}
+.btn:hover{box-shadow:inset 0 0 0 1px #f8b330}
+.btn.go{background:linear-gradient(#a8e07a,#6fb636);color:#fff;border-color:#4f8a23;font-weight:bold;text-shadow:1px 1px 0 #3d6e1a}
+.btn.sm{padding:0 6px;font-size:11px}
+.btns{display:flex;flex-wrap:wrap;gap:4px;margin:6px 0}
+.hint{color:var(--mute);font-size:11px;margin:4px 0}
+.chk{display:flex;align-items:center;gap:4px;margin:3px 0}
+.themes{display:grid;grid-template-columns:repeat(auto-fill,minmax(105px,1fr));gap:6px}
+.theme{border:2px solid #ddd;padding:3px;cursor:pointer;background:#fff;text-align:center}
+.theme.on{border-color:#ff7a00;box-shadow:0 0 0 1px #ff7a00}
+.theme i{display:block;height:34px;margin-bottom:3px;border:1px solid #ccc}
+.list{border:1px solid #7f9db9;background:#fff;max-height:150px;overflow:auto;margin-bottom:6px}
+.list div{padding:2px 6px;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;border-bottom:1px dotted #e5e5e5}
+.list div.on{background:#316ac5;color:#fff}
+.list div small{color:inherit;opacity:.7}
+.kao{display:flex;flex-wrap:wrap;gap:3px;margin:4px 0}
+.kao button{border:1px solid #ccd;background:#f7f9ff;padding:0 4px;cursor:pointer;font-size:11px}
+.share-out{width:100%;height:70px;font-size:11px;word-break:break-all}
+.saved{color:var(--green);font-size:11px}
+
+.stage{position:relative;border:1px solid #9cc7e6;min-width:0;display:flex;flex-direction:column}
+.stage-bar{display:flex;align-items:center;gap:6px;padding:3px 6px;background:#eef5fb;border-bottom:1px solid #9cc7e6;flex-wrap:wrap}
+.stage-bar b{color:var(--blue)}
+.stage-bar .sp{flex:1}
+#frame{display:block;width:100%;flex:1;min-height:640px;border:0;background:#fff}
+.bgm{position:absolute;inset:auto 0 0 0;margin:auto;top:40px;width:260px;height:110px;background:#fffbe6;border:2px solid #f0b400;
+  box-shadow:4px 4px 0 rgba(0,0,0,.25);text-align:center;padding:14px;cursor:pointer;display:none;z-index:2}
+.bgm b{display:block;color:#c06000;font-size:14px;margin:6px 0}
+.viewbar{display:none;align-items:center;gap:8px;flex-wrap:wrap;padding:6px 10px;margin:8px 0;background:#fff7d6;border:1px solid #f0c040}
+.viewbar .sp{flex:1}
+
+body.view .ws{grid-template-columns:minmax(0,1fr)}
+body.view .panel,body.view .gramophone{display:none}
+body.view .viewbar{display:flex}
+body.view #frame{min-height:calc(100vh - 290px)}
+
+@media (max-width:900px){
+  .ws{grid-template-columns:minmax(0,1fr)}
+  #frame{min-height:70vh}
+  .ph{height:auto;flex-wrap:wrap;padding-top:8px}
+  .ph-r{display:none}
+  .logo{font-size:30px}
+  .icons{flex-wrap:wrap}
+  .icons button{width:52px}
+  .menubar span:nth-child(n+4),.toolbar .tool span{display:none}
+  .task{display:none}
+}
+</style>
+</head>
+<body>
+<div id="ie">
+  <div class="titlebar">
+    <span class="t" id="winTitle">吾名小站 - Microsoft Internet Explorer</span>
+    <span class="tb-btn">_</span><span class="tb-btn">□</span><span class="tb-btn x">×</span>
+  </div>
+  <div class="menubar"><span>檔案(F)</span><span>編輯(E)</span><span>檢視(V)</span><span>我的最愛(A)</span><span>工具(T)</span><span>說明(H)</span></div>
+  <div class="toolbar">
+    <button class="tool" onclick="history.back()"><i style="background:#3aa53a">◀</i><span>上一頁</span></button>
+    <button class="tool" onclick="render(true)"><i style="background:#2f8f2f">↻</i><span>重新整理</span></button>
+    <button class="tool" onclick="location.href='index.html'"><i style="background:#d9822b">⌂</i><span>首頁</span></button>
+    <button class="tool" onclick="showTab('share')"><i style="background:#e8b800">★</i><span>我的最愛</span></button>
+  </div>
+  <div class="addr"><label>網址(D)</label><div class="url" id="addr">http://www.myname.cc/</div><span class="go">➜ 移至</span></div>
+
+  <div class="page">
+    <div class="portal">
+      <div class="ph">
+        <a class="logo" href="index.html" style="text-decoration:none">吾名小站<small>MyName Station · 2005</small></a>
+        <div class="icons" id="icons">
+          <button data-tab="theme"><svg viewBox="0 0 38 34"><rect x="3" y="4" width="32" height="26" rx="3" fill="#4a90c8"/><rect x="7" y="8" width="24" height="18" fill="#dff2ff"/><path d="M8 25l8-9 6 6 4-4 5 7z" fill="#5aa34a"/><circle cx="25" cy="13" r="3" fill="#ffcf3a"/></svg>版型</button>
+          <button data-tab="posts"><svg viewBox="0 0 38 34"><rect x="5" y="3" width="26" height="28" rx="2" fill="#fff" stroke="#4a90c8" stroke-width="2.5"/><path d="M10 10h16M10 15h16M10 20h10" stroke="#4a90c8" stroke-width="2.5"/><path d="M27 23l7-7 2 2-7 7h-2z" fill="#e0007a"/></svg>網誌</button>
+          <button data-tab="music"><svg viewBox="0 0 38 34"><circle cx="19" cy="17" r="14" fill="#fff" stroke="#2b7bc0" stroke-width="3"/><path d="M15 10v14l11-7z" fill="#2b7bc0"/></svg>影音</button>
+          <button data-tab="guest"><svg viewBox="0 0 38 34"><rect x="3" y="4" width="30" height="20" rx="4" fill="#fff" stroke="#6a8aa8" stroke-width="2.5"/><path d="M10 24l-2 7 8-7z" fill="#6a8aa8"/><circle cx="12" cy="14" r="2" fill="#6a8aa8"/><circle cx="18" cy="14" r="2" fill="#6a8aa8"/><circle cx="24" cy="14" r="2" fill="#6a8aa8"/></svg>留言</button>
+          <button data-tab="share"><svg viewBox="0 0 38 34"><circle cx="13" cy="11" r="5" fill="#5b8bd0"/><path d="M3 30c0-8 5-12 10-12s10 4 10 12z" fill="#5b8bd0"/><circle cx="26" cy="13" r="4.5" fill="#f08a3a"/><path d="M18 30c0-7 4-10 8-10s9 3 9 10z" fill="#f08a3a"/></svg>找朋友</button>
+        </div>
+        <div class="ph-r">
+          <div class="links"><a>設為首頁</a><a>服務說明</a><a>加入VIP</a></div>
+          <div class="hi">Hi, <span id="hiUser">ming0921</span>！ <b>你的小站今天也很有型</b></div>
+          <div class="cats"><a>正妹</a><a>帥哥</a><a>美食</a><a>攝影</a><a>心情</a><a>笑話</a></div>
+        </div>
+      </div>
+
+      <div class="gramophone"><b>留聲機</b><div class="msg" id="gramo"></div><a onclick="showTab('guest')">我要留言</a></div>
+      <div class="viewbar">
+        <span>你正在參觀 <b id="vbUser"></b> 的吾名小站 ^^</span><span class="sp"></span>
+        <button class="btn" onclick="adoptShared()">把這個版型帶回我的後台</button>
+        <button class="btn go" onclick="goHome()">我也要開一個小站！</button>
+      </div>
+
+      <div class="ws">
+        <div class="panel">
+          <div class="tabs" id="tabs">
+            <button data-tab="basic" class="on">基本設定</button>
+            <button data-tab="posts">發表文章</button>
+            <button data-tab="theme">版面語法</button>
+            <button data-tab="music">音樂盒</button>
+            <button data-tab="guest">留言板</button>
+            <button data-tab="share">分享</button>
+          </div>
+
+          <!-- 基本設定 -->
+          <div class="pane on" data-pane="basic">
+            <h3>網誌資料</h3>
+            <div class="row"><label>帳號</label><input type="text" data-k="user" maxlength="20"></div>
+            <div class="row"><label>網誌標題</label><input type="text" data-k="title"></div>
+            <div class="row"><label>副標題</label><input type="text" data-k="subtitle"></div>
+            <div class="row"><label>跑馬燈</label><input type="text" data-k="marquee"></div>
+            <h3>個人資料</h3>
+            <div class="row"><label>暱稱</label><input type="text" data-k="profile.nick"></div>
+            <div class="row"><label>大頭貼網址</label><input type="url" data-k="profile.avatar" placeholder="空白＝自動產生像素頭像"></div>
+            <div class="row"><label></label><input type="file" id="avatarFile" accept="image/*"></div>
+            <div class="row"><label>今日心情</label><select data-k="profile.mood" id="moodSel"></select></div>
+            <div class="row"><label>簽名檔</label><input type="text" data-k="profile.sign"></div>
+            <div class="row" style="align-items:flex-start"><label>自我介紹</label><textarea data-k="profile.about" rows="4"></textarea></div>
+            <h3>特效</h3>
+            <label class="chk"><input type="checkbox" data-k="effects.sparkle"> 滑鼠拖曳星星尾巴</label>
+            <label class="chk"><input type="checkbox" data-k="effects.marquee"> 顯示跑馬燈公告</label>
+            <label class="chk"><input type="checkbox" data-k="effects.noRightClick"> 禁止按右鍵（防盜圖 XD）</label>
+            <p class="saved" id="savedAt"></p>
+          </div>
+
+          <!-- 文章 -->
+          <div class="pane" data-pane="posts">
+            <h3>文章列表</h3>
+            <div class="list" id="postList"></div>
+            <div class="btns"><button class="btn" onclick="addPost()">＋ 發表新文章</button><button class="btn" onclick="delPost()">刪除這篇</button><button class="btn sm" onclick="movePost(-1)">↑</button><button class="btn sm" onclick="movePost(1)">↓</button></div>
+            <h3>編輯文章</h3>
+            <div class="row"><label>標題</label><input type="text" data-p="title"></div>
+            <div class="row"><label>發表時間</label><input type="datetime-local" data-p="date"></div>
+            <div class="row"><label>心情</label><select data-p="mood" id="pMood"></select></div>
+            <div class="row"><label>人氣</label><input type="text" data-p="views" inputmode="numeric"></div>
+            <textarea data-p="body" id="pBody" rows="12" placeholder="可以直接寫 HTML，例如 &lt;font color=red&gt;紅字&lt;/font&gt;、&lt;marquee&gt;跑馬燈&lt;/marquee&gt;"></textarea>
+            <div class="kao" id="kao"></div>
+            <div class="btns"><button class="btn" onclick="toMars()">轉成火星文</button><button class="btn" onclick="wrapSel('&lt;font color=&quot;#ff3399&quot;&gt;','&lt;/font&gt;')">粉紅字</button><button class="btn" onclick="wrapSel('&lt;b&gt;','&lt;/b&gt;')">粗體</button><button class="btn" onclick="wrapSel('&lt;marquee&gt;','&lt;/marquee&gt;')">跑馬燈</button><button class="btn" onclick="wrapSel('&lt;span class=&quot;glitter&quot;&gt;','&lt;/span&gt;')">閃亮字</button></div>
+          </div>
+
+          <!-- 版型 -->
+          <div class="pane" data-pane="theme">
+            <h3>選擇基本版型</h3>
+            <div class="themes" id="themes"></div>
+            <h3>自訂 CSS 語法</h3>
+            <p class="hint">從別人家「檢視原始碼」複製來的語法，貼在這裡就會蓋過基本版型。可用：#container #banner #pageheader .description #content .blogbody .datediv .title .innertext .posted #links .sidetitle .side #footer</p>
+            <textarea class="code" data-k="css" spellcheck="false" placeholder="/* 在這裡貼上你的無敵語法 */"></textarea>
+            <h3>語法大全（點了就加進去）</h3>
+            <div class="btns" id="snips"></div>
+            <div class="btns"><button class="btn" onclick="copyThemeToCss()">把基本版型複製進來改</button><button class="btn" onclick="setK('css','');syncInputs();changed()">清空自訂語法</button></div>
+          </div>
+
+          <!-- 音樂 -->
+          <div class="pane" data-pane="music">
+            <h3>復古音樂盒</h3>
+            <div id="trackList"></div>
+            <div class="row"><label>自訂音樂</label><input type="url" data-k="music.url" placeholder="https://…/song.mp3（留空＝用內建曲）"></div>
+            <label class="chk"><input type="checkbox" data-k="music.autoplay"> 朋友來參觀時自動播放（會先跳「點此播放」）</label>
+            <div class="btns"><button class="btn go" onclick="Music.toggle()" id="playBtn">▶ 播放</button></div>
+            <p class="hint">內建曲都是用 Web Audio 即時合成的 8-bit 原創小曲，不用任何音檔。</p>
+          </div>
+
+          <!-- 留言 -->
+          <div class="pane" data-pane="guest">
+            <h3>最新留言</h3>
+            <div class="list" id="cmtList"></div>
+            <div class="btns"><button class="btn" onclick="delCmt()">刪除選取的留言</button></div>
+            <h3>幫自己灌留言（誤）</h3>
+            <div class="row"><label>暱稱</label><input type="text" id="cName" value="路過的"></div>
+            <div class="row"><label>內容</label><input type="text" id="cText" placeholder="版很漂亮耶～回訪^^"></div>
+            <div class="btns"><button class="btn go" onclick="addCmt()">送出留言</button></div>
+          </div>
+
+          <!-- 分享 -->
+          <div class="pane" data-pane="share">
+            <h3>產生分享網址</h3>
+            <p class="hint">整個小站（文字、版型、語法、音樂設定）都壓縮進網址裡，不用伺服器。貼給朋友就能看到你的版！</p>
+            <div class="btns"><button class="btn go" onclick="makeShare()">產生網址</button><button class="btn" onclick="copyShare()">複製</button><button class="btn" onclick="openShare()">開新視窗預覽</button></div>
+            <textarea class="share-out" id="shareOut" readonly></textarea>
+            <p class="hint" id="shareInfo"></p>
+            <h3>匯出</h3>
+            <div class="btns"><button class="btn" onclick="exportPng()">存成 PNG 截圖</button></div>
+            <p class="hint" id="pngInfo"></p>
+            <h3>危險區</h3>
+            <div class="btns"><button class="btn" onclick="resetAll()">重設成預設小站</button></div>
+          </div>
+        </div>
+
+        <div class="stage">
+          <div class="stage-bar"><b>預覽</b><span id="stageUrl"></span><span class="sp"></span><button class="btn sm" onclick="Music.toggle()" id="playBtn2">▶ 音樂</button></div>
+          <iframe id="frame" title="網誌預覽"></iframe>
+          <div class="bgm" id="bgm" onclick="bgmGo()">♪ ♫ ♪<b>本站有背景音樂</b>點這裡開始播放<br>（太大聲請自行調整音量 ^^"）</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="statusbar"><span id="status">完成</span><span>🌐 網際網路</span></div>
+  <div class="taskbar">
+    <button class="start" onclick="goHome()">開始</button>
+    <span class="task">即時通</span><span class="task on" id="taskTitle">吾名小站</span><span class="task">小畫家</span>
+    <span class="tray" id="clock"></span>
+  </div>
+</div>
+
+<script>
+'use strict';
+/* =========================================================
+   吾名小站 MyName Station — 2005 懷舊網誌模擬器
+   ========================================================= */
+const LS_KEY = 'myname-station-v1';
+const HTML2IMG = 'https://cdn.jsdelivr.net/npm/html-to-image@1.11.11/dist/html-to-image.js';
+const FONT = "'PMingLiU','新細明體','MingLiU','細明體',monospace,serif";
+
+const MOODS = [
+  ['開心', '^_^'], ['興奮', '≧▽≦'], ['戀愛中', '(*/ω＼*)'], ['無聊', '=.=+'], ['想睡', '(－.－)…zzz'],
+  ['憂鬱', '(〒︿〒)'], ['生氣', '(╯‵□′)╯︵┴─┴'], ['囧', '囧rz'], ['耍廢', 'ㄎㄎ']
+];
+const KAOMOJI = ['^^b', 'XD', 'Orz', '囧', '≧▽≦', '(′・ω・‵)', '\\^o^/', '(〒︿〒)', '^_^"', '∩_∩', '3Q', '(╯‵□′)╯︵┴─┴', '><', '=口=', '…囧rz'];
+const VISITORS = ['xX小雨Xx', 'momo0214', '耍廢企鵝', 'kitty_520', '阿弟仔', 'sweet.cherry', '火星人來訪', 'lonely_boy', '布丁不要走', 'bluesky1987', '小葵花', '天使的眼淚'];
+
+const DEFAULT = {
+  v: 1,
+  user: 'ming0921',
+  title: '☆ 小明の秘密基地 ☆',
+  subtitle: '人生就像一盒巧克力……我只想吃黑的那顆 XD',
+  marquee: '歡迎光臨～～看完文章記得留言喔！不准當潛水艇 >"<',
+  theme: 'classic',
+  css: '',
+  profile: {
+    nick: '小明',
+    avatar: '',
+    mood: '開心',
+    sign: '期末考 all pass 就去墾丁！',
+    about: '處女座 / O型\n喜歡：聽音樂、包夜、拍大頭貼\n討厭：早八、考試、只看不留言的人'
+  },
+  posts: [
+    { title: '今天終於把網誌版型弄好了啦 ^^b', date: '2005-08-12T23:45', mood: '興奮', views: 87,
+      body: '花了一整個下午在研究 CSS 語法……\n從別人家複製了一堆語法，結果整個版跑掉 囧\n後來發現是 #links 的寬度設錯 Orz\n\n總之！吾名小站正式開張～\n有經過的朋友記得在留言板留個言喔 ≧▽≦\n<font color="#ff3399">不准只看不留言！</font>' },
+    { title: '期末考結束 → 網咖包夜', date: '2005-08-10T21:03', mood: '耍廢', views: 52,
+      body: '考完最後一科直接衝網咖\n跟阿弟仔他們連線打到天亮 XD\n開了 8 小時，眼睛快瞎了\n\n回家的路上買了一杯珍奶\n<b>人生的意義大概就是這樣吧</b>（誤）' },
+    { title: '睡不著的夜晚', date: '2005-08-03T01:12', mood: '憂鬱', views: 133,
+      body: '即時通上的大家一個一個離線了\n只剩我還掛在線上\n狀態改成「忙碌」但其實一點都不忙\n\n……有些話，打了又刪掉。' }
+  ],
+  comments: [
+    { name: '布丁不要走', text: '沙發！！！', date: '2005-08-13 00:02' },
+    { name: 'momo0214', text: '版很口愛耶！語法可以分享嗎^^', date: '2005-08-13 09:41' },
+    { name: '阿弟仔', text: '推推～來回訪囉 下次再一起包夜', date: '2005-08-13 12:20' }
+  ],
+  music: { track: 0, url: '', autoplay: true },
+  effects: { sparkle: true, marquee: true, noRightClick: false },
+  counter: 5201
+};
+
+/* ---------------- 版型 ---------------- */
+const THEMES = {
+  classic: { name: '吾名原味藍', sw: 'linear-gradient(#a8d8f8 50%,#7cc242 0)', css:
+`body{background:#dfeffa;color:#333}
+#container{background:#fff;border:1px solid #8fbfe0}
+#banner{background:linear-gradient(#a8d8f8,#e8f6ff);border-bottom:4px solid #7cc242}
+#pageheader a{color:#fff;text-decoration:none;text-shadow:-1px -1px 0 #1a6fb3,1px -1px 0 #1a6fb3,-1px 1px 0 #1a6fb3,1px 1px 0 #1a6fb3,2px 3px 0 #1a6fb3}
+.description{color:#1a6fb3}
+.datediv{color:#5a9a2a;font-weight:bold}
+.title{color:#1a6fb3;font-size:13px;font-weight:bold;border-bottom:1px dashed #8fbfe0}
+.posted{color:#888;font-size:11px;text-align:right;border-top:1px dotted #ccc}
+.sidetitle{background:#7cc242;color:#fff;font-weight:bold;padding:2px 6px}
+.side{border:1px solid #c9e6f8;border-top:0}
+a{color:#1a6fb3}
+#footer{color:#888;border-top:1px solid #c9e6f8}` },
+
+  pink: { name: '粉紅公主', sw: 'radial-gradient(#ff8fbf 30%,#ffe6f0 32%) 0 0/8px 8px', css:
+`body{background:#ffe6f0 radial-gradient(#ffc2db 18%,transparent 20%) 0 0/16px 16px;color:#a0406a}
+#container{background:#fff;border:3px double #ff8fbf}
+#banner{background:linear-gradient(#ffc9e0,#fff0f6);text-align:center;border-bottom:2px dotted #ff8fbf}
+#pageheader a{color:#ff4f9a;text-decoration:none;text-shadow:1px 1px 0 #fff,2px 2px 0 #ffb6d5;animation:glitter 1s steps(2) infinite}
+.description{color:#d0609a}
+.datediv{background:#ffe0ee;color:#c04080;padding:0 8px;display:inline-block;border-radius:8px}
+.title{color:#ff4f9a;font-weight:bold;font-size:13px}
+.title:before{content:"♥ "}
+.posted{color:#d78ab0;border-top:1px dashed #ffb6d5;font-size:11px}
+.sidetitle{background:#ff8fbf;color:#fff;text-align:center;border-radius:8px 8px 0 0;padding:2px}
+.side{background:#fff5fa;border:1px dashed #ff8fbf;border-top:0}
+a{color:#ff4f9a}
+#footer{color:#d78ab0}` },
+
+  emo: { name: '黑色系視覺', sw: 'linear-gradient(#000 70%,#900 0)', css:
+`body{background:#000;color:#aaa}
+#container{background:#111;border:1px solid #333}
+#banner{background:#000;border-bottom:1px solid #600;letter-spacing:4px}
+#pageheader a{color:#fff;text-decoration:none;font-family:Georgia,serif;font-style:italic;font-weight:normal}
+.description{color:#900}
+.datediv{color:#666;font-size:11px}
+.title{color:#fff;border-left:4px solid #900;padding-left:6px}
+.innertext{color:#ccc}
+.posted{color:#555;font-size:11px;text-align:right}
+.sidetitle{color:#c00;border-bottom:1px solid #600;letter-spacing:2px}
+.side{color:#888}
+a{color:#c33}
+::selection{background:#900;color:#fff}
+#footer{color:#444}` },
+
+  milk: { name: '草莓牛奶', sw: 'repeating-conic-gradient(#ffcfcf 0 25%,#fff8e7 0 50%) 0 0/12px 12px', css:
+`body{background:#fff8e7 repeating-conic-gradient(#ffdede 0 25%,#fff8e7 0 50%) 0 0/24px 24px;color:#7a4b3a}
+#container{background:#fffdf7;border:2px solid #e8a0a0;box-shadow:5px 5px 0 #e8a0a0}
+#banner{background:#ffdede;border-bottom:2px solid #e8a0a0}
+#pageheader a{color:#c0504d;text-decoration:none}
+.description{color:#a06a5a}
+.datediv{color:#c0504d}
+.title{color:#7a4b3a;font-weight:bold;background:#fff0e0;padding:2px 6px;border-left:6px solid #e8a0a0}
+.posted{color:#b08070;font-size:11px;text-align:right}
+.sidetitle{background:#c0504d;color:#fff8e7;padding:2px 6px;font-weight:bold}
+.side{background:#fff;border:2px solid #e8a0a0;border-top:0}
+a{color:#c0504d}
+#footer{color:#b08070}` },
+
+  win98: { name: '經典灰視窗', sw: 'linear-gradient(90deg,#0a246a,#a6caf0 50%,#d4d0c8 0)', css:
+`body{background:#008080;color:#000}
+#container{background:#d4d0c8;border:2px outset #fff;padding:3px}
+#banner{background:linear-gradient(90deg,#0a246a,#a6caf0);padding:6px 10px}
+#pageheader{font-size:14px}
+#pageheader a{color:#fff;text-decoration:none}
+.description{color:#fff}
+.blogbody{background:#fff;border:2px inset #fff;padding:8px}
+.title{font-weight:bold;color:#0a246a}
+.posted{color:#808080;font-size:11px;border-top:1px solid #d4d0c8}
+.sidetitle{background:linear-gradient(90deg,#0a246a,#a6caf0);color:#fff;font-weight:bold;padding:1px 4px}
+.side{background:#d4d0c8;border:1px solid #808080;border-top:0}
+a{color:#00f}
+#footer{color:#fff}` }
+};
+
+const SNIPPETS = [
+  ['左右欄互換', '#content{float:right}\n#links{float:left}'],
+  ['愛心游標', 'body,a{cursor:url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'20\' height=\'20\'%3E%3Ctext y=\'16\' font-size=\'16\' fill=\'%23ff3399\'%3E%E2%99%A5%3C/text%3E%3C/svg%3E") 4 4,auto}'],
+  ['捲軸變色', 'html{scrollbar-color:#ff8fbf #fff0f6}'],
+  ['標題閃亮亮', '#pageheader a{animation:glitter .6s steps(2) infinite}'],
+  ['大頭貼圓形', '.avatar{border-radius:50%}'],
+  ['圖片灰階', '.innertext img{filter:grayscale(1)}\n.innertext img:hover{filter:none}'],
+  ['文章框框', '.blogbody{border:1px dashed #999;padding:8px}'],
+  ['藏起誰來我家', '.visitors{display:none}'],
+  ['背景圖平鋪', 'body{background-image:url("https://圖片網址.gif");background-repeat:repeat}'],
+  ['連結滑過變色', 'a:hover{color:#ff3399;background:#ffffcc}']
+];
+
+/* 原創 8-bit 小曲：每格 = 八分音符，'-' = 延長 */
+const TRACKS = [
+  { name: '放學後的電腦教室', bpm: 132, wave: 'square',
+    lead: 'E5 G5 C6 G5 A5 - G5 - E5 G5 A5 G5 E5 - D5 - C5 E5 G5 E5 F5 - E5 - D5 E5 F5 D5 C5 - - -',
+    bass: 'C3 - G3 - A2 - E3 - F2 - C3 - G2 - G3 - C3 - G3 - F2 - C3 - G2 - B2 - C3 - - -' },
+  { name: '半夜偷掛線上', bpm: 96, wave: 'triangle',
+    lead: 'A4 C5 E5 A5 G5 - E5 - F5 E5 D5 C5 B4 - - - A4 C5 E5 G5 F5 - D5 - E5 D5 C5 B4 A4 - - -',
+    bass: 'A2 - - - E3 - - - F2 - - - G2 - - - A2 - - - C3 - - - D3 - - - E3 - - -' },
+  { name: '網咖包夜進行曲', bpm: 156, wave: 'square',
+    lead: 'G5 G5 E5 G5 A5 G5 E5 C5 D5 D5 E5 D5 C5 - - - G5 G5 E5 G5 C6 B5 A5 G5 F5 E5 D5 E5 C5 - - -',
+    bass: 'C3 G3 C3 G3 C3 G3 C3 G3 G2 D3 G2 D3 C3 G3 C3 G3 C3 G3 C3 G3 F2 C3 F2 C3 G2 D3 G2 D3 C3 G3 C3 -' }
+];
+
+/* ---------------- 工具 ---------------- */
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const clone = o => JSON.parse(JSON.stringify(o));
+const getK = (o, p) => p.split('.').reduce((a, k) => a?.[k], o);
+function setK(p, v, o = S) { const ks = p.split('.'); const last = ks.pop(); ks.reduce((a, k) => a[k] ??= {}, o)[last] = v; }
+const lsGet = k => { try { return localStorage.getItem(k); } catch { return null; } };
+const lsSet = (k, v) => { try { localStorage.setItem(k, v); return true; } catch { return false; } };
+const pad = n => String(n).padStart(2, '0');
+
+function normalize(o) {
+  const d = clone(DEFAULT);
+  if (!o || typeof o !== 'object') return d;
+  const out = Object.assign(d, o);
+  out.profile = Object.assign(clone(DEFAULT.profile), o.profile);
+  out.music = Object.assign(clone(DEFAULT.music), o.music);
+  out.effects = Object.assign(clone(DEFAULT.effects), o.effects);
+  out.posts = Array.isArray(o.posts) ? o.posts : clone(DEFAULT.posts);
+  out.comments = Array.isArray(o.comments) ? o.comments : clone(DEFAULT.comments);
+  if (!THEMES[out.theme]) out.theme = 'classic';
+  return out;
+}
+
+/* 允許當年的 HTML（font、marquee、b…），但拿掉會執行程式的東西 */
+function sanitize(html) {
+  const doc = new DOMParser().parseFromString('<body>' + html + '</body>', 'text/html');
+  doc.querySelectorAll('script,iframe,object,embed,link,meta,base,form,frame,frameset').forEach(n => n.remove());
+  doc.body.querySelectorAll('*').forEach(el => {
+    [...el.attributes].forEach(a => {
+      const n = a.name.toLowerCase();
+      if (n.startsWith('on') || (/^(href|src|xlink:href|action|formaction|srcdoc)$/.test(n) && /^\s*(javascript|vbscript|data:text)/i.test(a.value)))
+        el.removeAttribute(a.name);
+    });
+  });
+  return doc.body.innerHTML;
+}
+
+const avCache = {};
+function pixelAvatar(seed) {
+  if (avCache[seed]) return avCache[seed];
+  let h = 2166136261;
+  for (const c of String(seed)) h = Math.imul(h ^ c.charCodeAt(0), 16777619) >>> 0;
+  h ||= 1;
+  const rnd = () => { h ^= h << 13; h >>>= 0; h ^= h >>> 17; h ^= h << 5; h >>>= 0; return h / 4294967296; };
+  const c = document.createElement('canvas'); c.width = c.height = 8;
+  const x = c.getContext('2d'); const hue = Math.floor(rnd() * 360);
+  x.fillStyle = `hsl(${hue},70%,92%)`; x.fillRect(0, 0, 8, 8);
+  x.fillStyle = `hsl(${hue},65%,48%)`;
+  for (let i = 0; i < 8; i++) for (let j = 0; j < 4; j++) if (rnd() > .5) { x.fillRect(j, i, 1, 1); x.fillRect(7 - j, i, 1, 1); }
+  return avCache[seed] = c.toDataURL();
+}
+
+function fmtDate(s) {
+  const d = new Date(s);
+  if (isNaN(d)) return { day: s || '', time: '' };
+  return { day: `${d.getFullYear()}/${pad(d.getMonth() + 1)}/${pad(d.getDate())} 星期${'日一二三四五六'[d.getDay()]}`, time: `${pad(d.getHours())}:${pad(d.getMinutes())}` };
+}
+const moodFace = m => (MOODS.find(x => x[0] === m) || ['', ''])[1];
+
+/* ---------------- 狀態 ---------------- */
+let S, viewMode = false, sharedState = null, curPost = 0, curCmt = -1;
+let hits = 0;
+
+function readHash() {
+  const m = location.hash.match(/^#data=(.+)$/);
+  if (!m || typeof LZString === 'undefined') return null;
+  try { return normalize(JSON.parse(LZString.decompressFromEncodedURIComponent(m[1]))); } catch { return null; }
+}
+function loadLocal() {
+  try { return normalize(JSON.parse(lsGet(LS_KEY))); } catch { return normalize(null); }
+}
+
+let saveT;
+function save() {
+  if (viewMode) return;
+  clearTimeout(saveT);
+  saveT = setTimeout(() => {
+    const ok = lsSet(LS_KEY, JSON.stringify(S));
+    const d = new Date();
+    $('#savedAt').textContent = ok ? `✔ 已自動儲存 ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}` : '⚠ 瀏覽器不讓我存檔（無痕模式？）';
+  }, 400);
+}
+function changed() { render(); save(); refreshChrome(); }
+
+/* ---------------- 網誌 HTML ---------------- */
+const BASE_CSS = `
+html,body{margin:0}
+body{font-family:${FONT};font-size:12px;line-height:1.5;-webkit-font-smoothing:none;-moz-osx-font-smoothing:auto;font-smooth:never;text-rendering:optimizeSpeed;padding:12px 0 20px}
+#container{width:760px;margin:0 auto}
+#banner{padding:26px 16px 18px}
+#pageheader{margin:0;font-size:24px;line-height:1.3}
+.description{margin-top:6px}
+#content{float:left;width:500px;padding:12px}
+#links{float:right;width:212px;padding:12px 12px 12px 0}
+#footer{clear:both;text-align:center;padding:10px;font-size:11px}
+.marquee{margin-bottom:12px;border:1px dashed currentColor;padding:2px 4px;opacity:.85}
+.blogbody{margin-bottom:26px}
+.datediv{margin-bottom:2px}
+.title{margin-bottom:4px}
+.mood{font-size:11px;opacity:.8;margin-bottom:6px}
+.innertext{margin-bottom:8px;word-wrap:break-word}
+.innertext img{max-width:100%}
+.posted{padding-top:2px}
+.sidetitle{margin-top:0}
+.side{margin-bottom:12px;padding:6px;font-size:12px}
+.profile{text-align:center}
+.avatar{width:96px;height:96px;object-fit:cover;border:1px solid #ccc;background:#fff;display:block;margin:2px auto 4px}
+img.pix{image-rendering:pixelated}
+.nick{font-weight:bold;font-size:13px}
+.about{text-align:left;margin-top:4px;font-size:11px}
+.visitors{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;text-align:center;font-size:11px}
+.visitors img{width:40px;height:40px;display:block;margin:0 auto;border:1px solid #ccc;image-rendering:pixelated}
+.visitors span{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.digits span{display:inline-block;background:#111;color:#3f3;font:bold 13px/18px monospace;width:12px;text-align:center;margin-right:1px;border:1px solid #555}
+.lcd{background:#a8c890;color:#123;font:12px/1.6 ${FONT};padding:1px 4px;border:2px inset #ddd;white-space:nowrap;overflow:hidden;margin-bottom:4px}
+.lcd span{display:inline-block;padding-left:100%;animation:scroll 9s linear infinite}
+.musicbox button{font:11px ${FONT};padding:0 6px;cursor:pointer}
+.eq{display:inline-flex;gap:1px;align-items:flex-end;height:12px;margin-left:4px;vertical-align:middle}
+.eq i{width:3px;background:currentColor;height:3px}
+.playing .eq i{animation:eq .5s ease-in-out infinite alternate}
+.playing .eq i:nth-child(2){animation-delay:.15s}.playing .eq i:nth-child(3){animation-delay:.3s}.playing .eq i:nth-child(4){animation-delay:.1s}
+.cmt{border-bottom:1px dotted #ccc;padding:3px 0}
+.cmt:last-child{border:0}
+.cdate{display:block;font-size:10px;opacity:.6}
+.glitter{animation:glitter .8s steps(2) infinite}
+.sparkle{position:absolute;pointer-events:none;font-size:12px;animation:fall .8s linear forwards;z-index:9999}
+@keyframes glitter{50%{color:#ffcc00;text-shadow:0 0 4px #fff}}
+@keyframes scroll{to{transform:translateX(-100%)}}
+@keyframes eq{to{height:12px}}
+@keyframes fall{to{transform:translateY(24px) scale(.3);opacity:0}}
+`;
+
+function blogHTML(st) {
+  const prof = st.profile;
+  const avatar = prof.avatar ? `<img class="avatar" src="${esc(prof.avatar)}" alt="大頭貼">` : `<img class="avatar pix" src="${pixelAvatar(st.user)}" alt="大頭貼">`;
+  const posts = st.posts.length ? st.posts.map(p => {
+    const d = fmtDate(p.date);
+    const body = sanitize(String(p.body || '').replace(/\r?\n/g, '<br>'));
+    return `<div class="blogbody">
+  <div class="datediv">${esc(d.day)}</div>
+  <div class="title">${esc(p.title)}</div>
+  ${p.mood ? `<div class="mood">心情：${esc(p.mood)} ${esc(moodFace(p.mood))}</div>` : ''}
+  <div class="innertext">${body}</div>
+  <div class="posted">由 ${esc(prof.nick || st.user)} 發表於 ${esc(d.time)} | <a href="#">回應(${st.comments.length})</a> | <a href="#">引用(0)</a> | 人氣(${esc(p.views ?? 0)})</div>
+</div>`;
+  }).join('\n') : '<div class="blogbody"><div class="innertext">這個人很懶，什麼都沒寫……</div></div>';
+
+  const seed = st.user.length;
+  const vis = VISITORS.slice(seed % 4, seed % 4 + 6).map(n => `<div><img src="${pixelAvatar(n)}" alt=""><span>${esc(n)}</span></div>`).join('');
+  const total = String((+st.counter || 0) + hits).padStart(7, '0');
+  const tr = st.music.url ? '自訂音樂' : (TRACKS[st.music.track] || TRACKS[0]).name;
+  const cm = st.comments.slice(-6).reverse().map(c => `<div class="cmt"><b>${esc(c.name)}</b>：${esc(c.text)}<span class="cdate">${esc(c.date)}</span></div>`).join('') || '<div class="cmt">還沒有人留言 QQ</div>';
+
+  return `<div id="container">
+<div id="banner">
+  <h1 id="pageheader"><a href="#">${esc(st.title)}</a></h1>
+  <div class="description">${esc(st.subtitle)}</div>
+</div>
+<div id="content">
+${st.effects.marquee && st.marquee ? `<div class="marquee"><marquee scrollamount="4">${esc(st.marquee)}</marquee></div>` : ''}
+${posts}
+</div>
+<div id="links">
+  <div class="sidetitle">個人資料</div>
+  <div class="side profile">${avatar}<div class="nick">${esc(prof.nick)}</div><div>心情：${esc(prof.mood)} ${esc(moodFace(prof.mood))}</div><div class="sign">${esc(prof.sign)}</div><div class="about">${esc(prof.about).replace(/\n/g, '<br>')}</div></div>
+  <div class="sidetitle">誰來我家</div>
+  <div class="side"><div class="visitors">${vis}</div></div>
+  <div class="sidetitle">人氣計數器</div>
+  <div class="side counter">今日人氣：${(st.user.length * 7 + hits) % 97 + 3}<br>累積人氣：<span class="digits">${[...total].map(c => `<span>${c}</span>`).join('')}</span></div>
+  <div class="sidetitle">音樂盒</div>
+  <div class="side musicbox${Music.playing ? ' playing' : ''}"><div class="lcd"><span>♪ ${esc(tr)} ♪</span></div><button data-act="prev">|◀</button> <button data-act="toggle">${Music.playing ? '■ 停止' : '▶ 播放'}</button> <button data-act="next">▶|</button><span class="eq"><i></i><i></i><i></i><i></i></span></div>
+  <div class="sidetitle">最新留言</div>
+  <div class="side comments">${cm}</div>
+</div>
+<div id="footer">Powered by 吾名小站 MyName Station · 本站最佳瀏覽解析度 1024×768 · 建議使用 IE 6.0 以上瀏覽</div>
+</div>`;
+}
+
+/* ---------------- 預覽 iframe ---------------- */
+const frame = $('#frame');
+let fdoc;
+function initFrame() {
+  frame.srcdoc = `<!doctype html><html><head><meta charset="utf-8"><base target="_blank"><style id="base">${BASE_CSS}</style><style id="theme"></style><style id="user"></style></head><body></body></html>`;
+  frame.onload = () => {
+    fdoc = frame.contentDocument;
+    fdoc.addEventListener('click', e => {
+      const b = e.target.closest('[data-act]');
+      if (b) { e.preventDefault(); Music[b.dataset.act](); return; }
+      if (e.target.closest('a[href="#"]')) e.preventDefault();
+    });
+    fdoc.addEventListener('contextmenu', e => { if (cur().effects.noRightClick) { e.preventDefault(); alert('本站禁止按右鍵！要語法請留言 ^^b'); } });
+    let last = 0;
+    fdoc.addEventListener('mousemove', e => {
+      if (!cur().effects.sparkle || e.timeStamp - last < 40) return;
+      last = e.timeStamp;
+      const s = fdoc.createElement('span');
+      s.className = 'sparkle'; s.textContent = '✦★✧＊'[Math.random() * 4 | 0];
+      s.style.cssText = `left:${e.pageX + 6}px;top:${e.pageY + 4}px;color:hsl(${Math.random() * 360},90%,60%)`;
+      fdoc.body.appendChild(s);
+      setTimeout(() => s.remove(), 800);
+    });
+    render(true);
+  };
+}
+const cur = () => viewMode ? sharedState : S;
+
+let renderT;
+function render(now) {
+  clearTimeout(renderT);
+  const go = () => {
+    if (!fdoc) return;
+    const st = cur();
+    fdoc.title = st.title;
+    fdoc.getElementById('theme').textContent = THEMES[st.theme].css;
+    fdoc.getElementById('user').textContent = st.css;
+    const y = fdoc.documentElement.scrollTop;
+    fdoc.body.innerHTML = blogHTML(st);
+    fdoc.documentElement.scrollTop = y;
+  };
+  now === true ? go() : (renderT = setTimeout(go, 120));
+}
+
+/* ---------------- 音樂盒 ---------------- */
+function noteFreq(n) {
+  const m = /^([A-G])(#?)(\d)$/.exec(n); if (!m) return 0;
+  const midi = (+m[3] + 1) * 12 + { C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11 }[m[1]] + (m[2] ? 1 : 0);
+  return 440 * 2 ** ((midi - 69) / 12);
+}
+function parseSeq(str) {
+  const toks = str.trim().split(/\s+/), ev = [];
+  toks.forEach((t, i) => { if (t !== '-') { let len = 1; while (toks[i + len] === '-') len++; ev.push({ at: i, f: noteFreq(t), len }); } });
+  return { ev, steps: toks.length };
+}
+const Music = {
+  ctx: null, playing: false, timer: null, audio: null,
+  get st() { return cur(); },
+  ensure() { if (!this.ctx) { this.ctx = new (window.AudioContext || window.webkitAudioContext)(); this.gain = this.ctx.createGain(); this.gain.gain.value = .12; this.gain.connect(this.ctx.destination); } },
+  start() {
+    this.stop(true);
+    const m = this.st.music;
+    if (m.url) {
+      this.audio = new Audio(m.url); this.audio.loop = true;
+      this.audio.play().catch(() => { setStatus('音樂網址播不了 QQ 換一首試試'); this.stop(); });
+    } else {
+      this.ensure(); this.ctx.resume();
+      const t = TRACKS[m.track] || TRACKS[0];
+      const lead = parseSeq(t.lead), bass = parseSeq(t.bass), dur = 60 / t.bpm / 2;
+      let step = 0, next = this.ctx.currentTime + .05;
+      const blip = (f, at, len, wave, vol) => {
+        const o = this.ctx.createOscillator(), g = this.ctx.createGain();
+        o.type = wave; o.frequency.value = f;
+        g.gain.setValueAtTime(vol, at); g.gain.exponentialRampToValueAtTime(.001, at + len * dur * .95);
+        o.connect(g); g.connect(this.gain); o.start(at); o.stop(at + len * dur);
+      };
+      this.timer = setInterval(() => {
+        while (next < this.ctx.currentTime + .2) {
+          for (const e of lead.ev) if (e.at === step % lead.steps) blip(e.f, next, e.len, t.wave, .5);
+          for (const e of bass.ev) if (e.at === step % bass.steps) blip(e.f, next, e.len, 'triangle', .7);
+          step++; next += dur;
+        }
+      }, 50);
+    }
+    this.playing = true; this.sync();
+  },
+  stop(silent) {
+    clearInterval(this.timer); this.timer = null;
+    if (this.audio) { this.audio.pause(); this.audio = null; }
+    this.playing = false; if (!silent) this.sync();
+  },
+  toggle() { this.playing ? this.stop() : this.start(); },
+  next() { this.skip(1); }, prev() { this.skip(-1); },
+  skip(d) {
+    const m = this.st.music; m.url = m.url && viewMode ? m.url : '';
+    m.track = (m.track + d + TRACKS.length) % TRACKS.length;
+    if (!viewMode) { syncInputs(); save(); }
+    this.playing ? this.start() : this.sync();
+  },
+  sync() {
+    const lbl = this.playing ? '■ 停止' : '▶ 播放';
+    $('#playBtn').textContent = lbl; $('#playBtn2').textContent = this.playing ? '■ 音樂' : '▶ 音樂';
+    render(true);
+  }
+};
+function bgmGo() { $('#bgm').style.display = 'none'; Music.start(); }
+
+/* ---------------- 編輯器 ---------------- */
+function showTab(name) {
+  $$('#tabs button').forEach(b => b.classList.toggle('on', b.dataset.tab === name));
+  $$('#icons button').forEach(b => b.classList.toggle('on', b.dataset.tab === name));
+  $$('.pane').forEach(p => p.classList.toggle('on', p.dataset.pane === name));
+}
+
+function syncInputs() {
+  $$('[data-k]').forEach(el => {
+    const v = getK(S, el.dataset.k);
+    if (el.type === 'checkbox') el.checked = !!v; else if (el.type !== 'file' && el !== document.activeElement) el.value = v ?? '';
+  });
+  const p = S.posts[curPost];
+  $$('[data-p]').forEach(el => { el.disabled = !p; if (el !== document.activeElement) el.value = p ? (p[el.dataset.p] ?? '') : ''; });
+  $('#postList').innerHTML = S.posts.map((p, i) => `<div class="${i === curPost ? 'on' : ''}" data-i="${i}">${esc(p.title || '(無標題)')} <small>${esc(fmtDate(p.date).day.slice(0, 10))}</small></div>`).join('') || '<div>還沒有文章</div>';
+  $('#cmtList').innerHTML = S.comments.map((c, i) => `<div class="${i === curCmt ? 'on' : ''}" data-i="${i}"><b>${esc(c.name)}</b>：${esc(c.text)}</div>`).join('') || '<div>沒有留言</div>';
+  $('#themes').innerHTML = Object.entries(THEMES).map(([k, t]) => `<div class="theme${S.theme === k ? ' on' : ''}" data-theme="${k}"><i style="background:${t.sw}"></i>${t.name}</div>`).join('');
+  $('#trackList').innerHTML = TRACKS.map((t, i) => `<label class="chk"><input type="radio" name="trk" value="${i}"${!S.music.url && S.music.track === i ? ' checked' : ''}> ${esc(t.name)} <small style="color:#999">${t.bpm} BPM</small></label>`).join('');
+}
+
+function bindEditor() {
+  $('#moodSel').innerHTML = $('#pMood').innerHTML = MOODS.map(m => `<option>${m[0]}</option>`).join('');
+  $$('[data-k]').forEach(el => el.addEventListener(el.type === 'checkbox' ? 'change' : 'input', () => {
+    setK(el.dataset.k, el.type === 'checkbox' ? el.checked : el.value);
+    changed();
+    if (el.dataset.k === 'music.url' && Music.playing) Music.start();
+  }));
+  $$('[data-p]').forEach(el => el.addEventListener('input', () => {
+    const p = S.posts[curPost]; if (!p) return;
+    p[el.dataset.p] = el.dataset.p === 'views' ? (parseInt(el.value, 10) || 0) : el.value;
+    changed();
+    if (el.dataset.p === 'title' || el.dataset.p === 'date') syncList();
+  }));
+  $('#postList').addEventListener('click', e => { const d = e.target.closest('[data-i]'); if (d) { curPost = +d.dataset.i; syncInputs(); } });
+  $('#cmtList').addEventListener('click', e => { const d = e.target.closest('[data-i]'); if (d) { curCmt = +d.dataset.i; syncInputs(); } });
+  $('#themes').addEventListener('click', e => { const d = e.target.closest('[data-theme]'); if (d) { S.theme = d.dataset.theme; syncInputs(); changed(); } });
+  $('#trackList').addEventListener('change', e => { S.music.track = +e.target.value; S.music.url = ''; syncInputs(); changed(); if (Music.playing) Music.start(); });
+  $('#tabs').addEventListener('click', e => { const b = e.target.closest('[data-tab]'); if (b) showTab(b.dataset.tab); });
+  $('#icons').addEventListener('click', e => { const b = e.target.closest('[data-tab]'); if (b) { if (viewMode) goHome(); showTab(b.dataset.tab); } });
+  $('#kao').innerHTML = KAOMOJI.map(k => `<button type="button">${esc(k)}</button>`).join('');
+  $('#kao').addEventListener('click', e => { if (e.target.tagName === 'BUTTON') insertAtCursor(e.target.textContent); });
+  $('#snips').innerHTML = SNIPPETS.map((s, i) => `<button class="btn sm" data-i="${i}">${s[0]}</button>`).join('');
+  $('#snips').addEventListener('click', e => {
+    const b = e.target.closest('[data-i]'); if (!b) return;
+    const [name, css] = SNIPPETS[+b.dataset.i];
+    S.css = (S.css ? S.css.replace(/\s*$/, '\n\n') : '') + `/* ${name} */\n${css}\n`;
+    syncInputs(); changed();
+  });
+  $('#avatarFile').addEventListener('change', e => {
+    const f = e.target.files[0]; if (!f) return;
+    const img = new Image();
+    img.onload = () => {
+      const c = document.createElement('canvas'); c.width = c.height = 96;
+      const s = Math.min(img.width, img.height);
+      c.getContext('2d').drawImage(img, (img.width - s) / 2, (img.height - s) / 2, s, s, 0, 0, 96, 96);
+      S.profile.avatar = c.toDataURL('image/jpeg', .72);
+      URL.revokeObjectURL(img.src); syncInputs(); changed();
+    };
+    img.src = URL.createObjectURL(f);
+  });
+}
+function syncList() {
+  $$('#postList [data-i]').forEach((d, i) => { const p = S.posts[i]; d.innerHTML = `${esc(p.title || '(無標題)')} <small>${esc(fmtDate(p.date).day.slice(0, 10))}</small>`; });
+}
+
+function addPost() {
+  const d = new Date();
+  S.posts.unshift({ title: '新文章', date: `2005-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`, mood: '開心', views: 0, body: '今天…\n' });
+  curPost = 0; syncInputs(); changed(); $('#pBody').focus();
+}
+function delPost() {
+  if (!S.posts[curPost] || !confirm(`確定要刪除「${S.posts[curPost].title}」？`)) return;
+  S.posts.splice(curPost, 1); curPost = Math.max(0, curPost - 1); syncInputs(); changed();
+}
+function movePost(d) {
+  const j = curPost + d; if (j < 0 || j >= S.posts.length) return;
+  [S.posts[curPost], S.posts[j]] = [S.posts[j], S.posts[curPost]]; curPost = j; syncInputs(); changed();
+}
+function insertAtCursor(txt) {
+  const ta = $('#pBody'); if (ta.disabled) return;
+  const a = ta.selectionStart, b = ta.selectionEnd;
+  ta.setRangeText(txt, a, b, 'end'); ta.focus(); ta.dispatchEvent(new Event('input'));
+}
+function wrapSel(open, close) {
+  const unesc = s => new DOMParser().parseFromString(s, 'text/html').documentElement.textContent;
+  const ta = $('#pBody'); if (ta.disabled) return;
+  const a = ta.selectionStart, b = ta.selectionEnd, sel = ta.value.slice(a, b) || '文字';
+  ta.setRangeText(unesc(open) + sel + unesc(close), a, b, 'select'); ta.focus(); ta.dispatchEvent(new Event('input'));
+}
+
+const MARS = [['什麼', '蝦米'], ['這樣', '醬'], ['不要', '表'], ['喜歡', '喜翻'], ['謝謝', '3Q'], ['怎麼', '腫麼'], ['沒有', '每有'], ['覺得', '決得'], ['可愛', '口愛'], ['一樣', '依樣'], ['真的', '真ㄉ'], ['知道', '芝道'],
+  ['的', 'ㄉ'], ['了', 'ㄌ'], ['是', '4'], ['很', '粉'], ['你', '尼'], ['我', '偶'], ['呢', 'ㄋ'], ['啦', 'ㄌ'], ['嗎', 'ㄇ'], ['吧', 'ㄅ'], ['啊', 'ㄚ'], ['喔', 'ㄛ'], ['好', 'ㄏㄠˇ'], ['他', 'ㄊ'], ['她', 'ㄊ'], ['在', '在'], ['就', 'ㄐㄡˋ']];
+function toMars() {
+  const p = S.posts[curPost]; if (!p) return;
+  const conv = s => MARS.reduce((t, [a, b]) => t.split(a).join(b), s);
+  p.body = String(p.body).split(/(<[^>]+>)/).map(seg => seg.startsWith('<') ? seg : conv(seg)).join('');
+  syncInputs(); changed(); setStatus('已轉換成火星文 ㄎㄎ');
+}
+
+function addCmt() {
+  const name = $('#cName').value.trim() || '路過的', text = $('#cText').value.trim();
+  if (!text) return $('#cText').focus();
+  const d = new Date();
+  S.comments.push({ name, text, date: `2005-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}` });
+  $('#cText').value = ''; curCmt = -1; syncInputs(); changed();
+}
+function delCmt() { if (curCmt < 0 || !S.comments[curCmt]) return setStatus('先點一則留言再刪除'); S.comments.splice(curCmt, 1); curCmt = -1; syncInputs(); changed(); }
+function copyThemeToCss() {
+  S.css = `/* 由「${THEMES[S.theme].name}」複製 */\n${THEMES[S.theme].css}\n\n${S.css}`;
+  syncInputs(); changed();
+}
+
+/* ---------------- 分享 / 匯出 ---------------- */
+function shareUrl(st = S) {
+  return location.href.split('#')[0] + '#data=' + LZString.compressToEncodedURIComponent(JSON.stringify(st));
+}
+function makeShare() {
+  if (typeof LZString === 'undefined') { $('#shareInfo').textContent = '壓縮套件沒載入成功，請確認網路連線後重新整理。'; return ''; }
+  const url = shareUrl();
+  $('#shareOut').value = url;
+  $('#shareInfo').textContent = `網址長度 ${url.length.toLocaleString()} 字元` + (url.length > 8000 ? '：有點長！上傳的大頭貼很佔空間，改用圖片網址會短很多。' : '，可以放心貼給朋友 ^^b');
+  return url;
+}
+async function copyShare() {
+  const url = $('#shareOut').value || makeShare(); if (!url) return;
+  try { await navigator.clipboard.writeText(url); } catch { $('#shareOut').select(); document.execCommand('copy'); }
+  setStatus('已複製分享網址！快去貼在即時通暱稱上 XD');
+}
+function openShare() { const u = makeShare(); if (u) window.open(u, '_blank', 'noopener'); }
+
+async function exportPng() {
+  const info = $('#pngInfo'); info.textContent = '拍照中……請稍候';
+  try {
+    const w = frame.contentWindow;
+    if (!w.htmlToImage) await new Promise((ok, no) => { const s = fdoc.createElement('script'); s.src = HTML2IMG; s.onload = ok; s.onerror = no; fdoc.head.appendChild(s); });
+    const node = fdoc.documentElement;
+    const url = await w.htmlToImage.toPng(node, {
+      width: node.scrollWidth, height: node.scrollHeight, pixelRatio: 1,
+      backgroundColor: getComputedStyle(fdoc.body).backgroundColor,
+      filter: n => !(n.classList && n.classList.contains('sparkle'))
+    });
+    const a = document.createElement('a'); a.href = url; a.download = `myname-${cur().user}.png`; a.click();
+    info.textContent = '完成！檔案已下載。';
+  } catch (err) {
+    info.textContent = '截圖失敗：可能是外部圖片不允許跨網域讀取，或套件載入失敗。';
+    console.error(err);
+  }
+}
+
+function resetAll() {
+  if (!confirm('確定要把整個小站重設成預設內容？（文章、語法都會消失）')) return;
+  Music.stop(true); S = normalize(null); curPost = 0; curCmt = -1; syncInputs(); changed();
+}
+function adoptShared() {
+  if (!confirm('要用這個小站的內容「覆蓋」你自己的後台嗎？')) return;
+  S = normalize(clone(sharedState)); lsSet(LS_KEY, JSON.stringify(S)); goHome();
+}
+function goHome() { if (location.hash) location.hash = ''; else if (viewMode) boot(); }
+
+/* ---------------- 外框 ---------------- */
+function setStatus(t) { $('#status').textContent = t; clearTimeout(setStatus.t); setStatus.t = setTimeout(() => $('#status').textContent = '完成', 4000); }
+function refreshChrome() {
+  const st = cur();
+  const url = `http://www.myname.cc/blog/${st.user}`;
+  $('#addr').textContent = url; $('#stageUrl').textContent = url;
+  $('#winTitle').textContent = `${st.title} - 吾名小站 - Microsoft Internet Explorer`;
+  $('#taskTitle').textContent = st.title; $('#hiUser').textContent = S.user; $('#vbUser').textContent = st.user;
+  document.title = viewMode ? `${st.title} - 吾名小站` : '吾名小站 MyName Station — 2005 懷舊網誌模擬器';
+}
+function tickClock() { const d = new Date(), h = d.getHours(); $('#clock').textContent = `${h < 12 ? '上午' : '下午'} ${pad(h % 12 || 12)}:${pad(d.getMinutes())}`; }
+let gIdx = 0;
+function tickGramo() {
+  const src = cur().comments.length ? cur().comments : [{ name: 'MyNameFAQ', text: '記得來看新公告^^b' }];
+  const c = src[gIdx++ % src.length];
+  $('#gramo').innerHTML = `<em>${esc(c.name)}</em> 要對大家說：${esc(c.text)}`;
+}
+
+function boot() {
+  Music.stop(true);
+  sharedState = readHash();
+  viewMode = !!sharedState;
+  document.body.classList.toggle('view', viewMode);
+  S = S || loadLocal();
+  syncInputs(); refreshChrome(); tickGramo();
+  $('#bgm').style.display = viewMode && sharedState.music.autoplay ? 'block' : 'none';
+  render(true);
+  if (location.hash && !viewMode) setStatus('分享網址壞掉了 QQ 已開啟你自己的小站');
+}
+
+hits = (parseInt(lsGet('myname-hits'), 10) || 0) + 1; lsSet('myname-hits', hits);
+bindEditor();
+initFrame();
+boot();
+tickClock(); setInterval(tickClock, 15000);
+setInterval(tickGramo, 5000);
+window.addEventListener('hashchange', boot);
+</script>
+</body>
+</html>
